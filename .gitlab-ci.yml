@@ -1,0 +1,80 @@
+image: python:3.10
+
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+
+cache:
+  paths:
+    - .cache/pip
+    - venv/
+
+
+before_script:
+  - python3 -V
+  - pip3 install virtualenv
+  - virtualenv venv
+  - source venv/bin/activate
+  - pip install --default-timeout=300 -r requirements.txt
+
+
+stages:
+  - format
+  - lint
+  - mypy
+  - test
+
+
+branch-format-isort:
+  stage: format
+  script:
+    - make isort
+
+
+branch-format-black:
+  stage: format
+  script:
+    - make format
+
+
+branch-lint:
+  stage: lint
+  script:
+    - make lint
+
+
+branch-mypy:
+  stage: mypy
+  script:
+    - make mypy
+
+
+branch-test-dataset:
+  stage: test
+  script:
+    - pytest -vs ./tests/unit/dataset.py
+
+
+branch-test-graph:
+  stage: test
+  script:
+    - pytest -vs ./tests/unit/graph.py
+
+
+branch-test-layer:
+  stage: test
+  script:
+    - pytest -vs ./tests/unit/layer.py
+
+
+branch-test-loader:
+  stage: test
+  script:
+    - pytest -vs ./tests/unit/loader.py
+
+
+branch-test-model:
+  stage: test
+  script:
+    - pytest -vs ./tests/unit/model.py

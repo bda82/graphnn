@@ -1,0 +1,15 @@
+.git/
+*.pyc
+venv/
+.vscode/
+.idea/
+.pytest_cache/
+.mypy_cache/
+dist/
+build/
+.cache
+logs/
+.DS_Store
+gns.egg-info/
+.env
+arangodb_data/
