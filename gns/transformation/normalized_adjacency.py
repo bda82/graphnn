@@ -1,4 +1,4 @@
-from gns.utils.normalized_adjacency import normalized_adjacency
+from gns.utils.normalized_adjacency_matrix import normalized_adjacency_matrix
 
 
 class NormalizeAdjacencyMatrix:
@@ -14,6 +14,6 @@ class NormalizeAdjacencyMatrix:
 
     def __call__(self, graph):
         if graph.a is not None:
-            graph.a = normalized_adjacency(graph.a, self.symmetric)
+            graph.a = normalized_adjacency_matrix(graph.a, self.symmetric)
 
         return

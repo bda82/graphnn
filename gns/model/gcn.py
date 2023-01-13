@@ -1,14 +1,15 @@
 import tensorflow as tf
 
 from gns.config.settings import settings_fabric
-from gns.layer.gcn_convolution import GCNConvolutionalGeneralLayer
+from gns.layer.gcn_convolution import GCNConvolutionalGeneralLayer, gcn_convolutional_general_layer_fabric
+from gns.layer.keras_dropout import keras_dropout_fabric
 
 settings = settings_fabric()
 
 
 class GraphConvolutionalNetworkModel(tf.keras.Model):
     """
-    The main model of a convolutional neural network, complementing the Tensotflow/Keras model.
+    The main model of a convolutional neural network, complementing the Tensorflow/Keras model.
 
     Operating modes:
         single
@@ -56,18 +57,21 @@ class GraphConvolutionalNetworkModel(tf.keras.Model):
         self.dropout_rate = dropout_rate
         self.l2_reg = l2_reg
 
-        reg = tf.keras.regularizers.l2(l2_reg)
+        regularizer = tf.keras.regularizers.l2(l2_reg)
 
-        self._d0 = tf.keras.layers.Dropout(dropout_rate)
+        self.dropout_layer_0: tf.keras.layers.Dropout = keras_dropout_fabric(dropout_rate)
+        self.dropout_layer_1: tf.keras.layers.Dropout = keras_dropout_fabric(dropout_rate)
 
-        self._gcn0 = GCNConvolutionalGeneralLayer(
-            channels, activation=activation, kernel_regularizer=reg, use_bias=use_bias
+        self.convolutional_layer_0: GCNConvolutionalGeneralLayer = gcn_convolutional_general_layer_fabric(
+            channels,
+            activation=activation,
+            kernel_regularizer=regularizer,
+            use_bias=use_bias
         )
-
-        self._d1 = tf.keras.layers.Dropout(dropout_rate)
-
-        self._gcn1 = GCNConvolutionalGeneralLayer(
-            n_labels, activation=output_activation, use_bias=use_bias
+        self.convolutional_layer_1 = gcn_convolutional_general_layer_fabric(
+            n_labels,
+            activation=output_activation,
+            use_bias=use_bias
         )
 
     def get_config(self) -> dict:
@@ -81,16 +85,17 @@ class GraphConvolutionalNetworkModel(tf.keras.Model):
             l2_reg=self.l2_reg,
         )
 
-    def call(self, inputs) -> GCNConvolutionalGeneralLayer:
+    def call(self, inputs) -> GCNConvolutionalGeneralLayer:  # noqa
         if len(inputs) == 2:
             x, a = inputs
         else:
-            x, a, _ = inputs  # So that the model can be used with DisjointLoader
+            # Model can be used with DisjointLoader
+            x, a, _ = inputs
 
-        x = self._d0(x)
-        x = self._gcn0([x, a])
-        x = self._d1(x)
-        return self._gcn1([x, a])
+        x = self.dropout_layer_0(x)
+        x = self.convolutional_layer_0([x, a])  # noqa
+        x = self.dropout_layer_1(x)
+        return self.convolutional_layer_1([x, a])  # noqa
 
 
 def graph_convolutional_network_model_fabric(

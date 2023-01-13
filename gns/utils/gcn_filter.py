@@ -5,7 +5,10 @@ from typing import Any
 import numpy as np
 from scipy import sparse as sp
 
-from gns.utils.normalized_adjacency import normalized_adjacency
+from gns.utils.normalized_adjacency_matrix import normalized_adjacency_matrix
+from gns.config.settings import settings_fabric
+
+settings = settings_fabric()
 
 
 def gcn_filter(A, symmetric=True) -> Any:
@@ -19,25 +22,31 @@ def gcn_filter(A, symmetric=True) -> Any:
     Returns:
         an array or a sparse matrix with rank 2 or 3, the same properties as the parameter A;
     """
-    # Скопируем матрицу для исключения сайд-эффектв
-    out = copy.deepcopy(A)
+    # copy data to avoid some side effects
 
-    if isinstance(A, list) or (isinstance(A, np.ndarray) and A.ndim == 3):
+    result = copy.deepcopy(A)
+
+    if_a_is_list_predicate = isinstance(A, list)
+    if_a_is_numpy_ndarray_predicate = isinstance(A, np.ndarray)
+
+    if if_a_is_list_predicate or (if_a_is_numpy_ndarray_predicate and A.ndim == 3):
         for i in range(len(A)):
-            out[i] = A[i]
-            out[i][np.diag_indices_from(out[i])] += 1
-            out[i] = normalized_adjacency(out[i], symmetric=symmetric)
+            result[i] = A[i]
+            result[i][np.diag_indices_from(result[i])] += 1
+            result[i] = normalized_adjacency_matrix(result[i], symmetric=symmetric)
     else:
-        if hasattr(out, "tocsr"):
-            out = out.tocsr()
+        if hasattr(result, settings.attribute_properties.tocsr):
+            result = result.tocsr()
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            out[np.diag_indices_from(out)] += 1
+            result[np.diag_indices_from(result)] += 1
 
-        out = normalized_adjacency(out, symmetric=symmetric)
+        result = normalized_adjacency_matrix(result, symmetric=symmetric)
 
-    if sp.issparse(out):
-        out.sort_indices()
+    issparse_predicate = sp.issparse(result)
 
-    return out
+    if issparse_predicate:
+        result.sort_indices()
+
+    return result

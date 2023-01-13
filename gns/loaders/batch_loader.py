@@ -2,14 +2,15 @@ import tensorflow as tf
 
 from gns.loaders.generic_loader import GenericLoader
 from gns.utils.collate_labels_batch import collate_labels_batch
-from gns.utils.sp_matrices_to_sp_tensors import sp_matrices_to_sp_tensors
-from gns.utils.to_batch import to_batch
-from gns.utils.to_tf_signature import to_tf_signature
+from gns.utils.sparse_matrices_to_sparse_tensors import sparse_matrices_to_sparse_tensors
+from gns.utils.convert_node_features_list_to_batch import convert_node_features_list_to_batch
+from gns.utils.to_tensorflow_signature import to_tensorflow_signature
+from gns.utils.prepend_none import prepend_none
 
 
 class BatchLoader(GenericLoader):
     """
-    A Loader for batch mode.
+    A Loader for Datasets in batch mode.
 
     BatchLoader returns batches of graphs stacked along an extra dimension,
     with all "node" dimensions padded to be equal among all graphs.
@@ -21,8 +22,8 @@ class BatchLoader(GenericLoader):
         `[n_max, n_max]`,
         `[n_max, n_max, n_edge_features]`.
 
-    The zero-padding is done batch-wise, which saves up memory at the cost of
-    more computation.
+    The zero-padding is done batch-wise, which saves up memory at the cost of more computation.
+
     Notes:
         The adjacency matrix and edge attributes are returned as dense arrays.
 
@@ -65,17 +66,19 @@ class BatchLoader(GenericLoader):
         self.mask = mask
         self.node_level = node_level
         self.signature = dataset.signature
+
         super().__init__(dataset, batch_size=batch_size, epochs=epochs, shuffle=shuffle)
 
     def collate(self, batch):
+        """Collate batch."""
         packed = self.pack(batch)
 
         y = packed.pop("y_list", None)
         if y is not None:
             y = collate_labels_batch(y, node_level=self.node_level)
 
-        output = to_batch(**packed, mask=self.mask)
-        output = sp_matrices_to_sp_tensors(output)
+        output = convert_node_features_list_to_batch(**packed, mask=self.mask)
+        output = sparse_matrices_to_sparse_tensors(output)
 
         if len(output) == 1:
             output = output[0]
@@ -84,9 +87,6 @@ class BatchLoader(GenericLoader):
             return output
         else:
             return output, y
-
-    def prepend_none(self, t):
-        return (None,) + t
 
     def tf_signature(self):
         """
@@ -98,31 +98,31 @@ class BatchLoader(GenericLoader):
         signature = self.signature
 
         for k in signature:
-            signature[k]["shape"] = self.prepend_none(signature[k]["shape"])
+            signature[k]["shape"] = prepend_none(signature[k]["shape"])
+
+        # In this case we have a mask and the mask is concatenated to the features
 
         if "x" in signature and self.mask:
-            # In case we have a mask, the mask is concatenated to the features
-
             signature["x"]["shape"] = signature["x"]["shape"][:-1] + (
                 signature["x"]["shape"][-1] + 1,
             )
 
-        if "a" in signature:
-            # Adjacency matrix in batch mode is dense
+        # Adjacency matrix in batch mode is dense
 
+        if "a" in signature:
             signature["a"]["spec"] = tf.TensorSpec
 
-        if "e" in signature:
-            # Edge attributes have an extra None dimension in batch mode
+        # Edge attributes have an extra None dimension in batch mode
 
-            signature["e"]["shape"] = self.prepend_none(signature["e"]["shape"])
+        if "e" in signature:
+            signature["e"]["shape"] = prepend_none(signature["e"]["shape"])
+
+        # Node labels have an extra None dimension
 
         if "y" in signature and self.node_level:
-            # Node labels have an extra None dimension
+            signature["y"]["shape"] = prepend_none(signature["y"]["shape"])
 
-            signature["y"]["shape"] = self.prepend_none(signature["y"]["shape"])
-
-        return to_tf_signature(signature)
+        return to_tensorflow_signature(signature)
 
 
 def batch_loader_fabric(

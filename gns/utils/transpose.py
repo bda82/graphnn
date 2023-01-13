@@ -15,13 +15,15 @@ def transpose(a, perm=None, name: str | None = None):
     Returns:
         Tensor or sparse tensor with rank k.
     """
-    if KerasBackend.is_sparse(a):
+    keras_is_sparse_predicate = KerasBackend.is_sparse(a)
+
+    if keras_is_sparse_predicate:
         transpose_op = tf.sparse.transpose
     else:
         transpose_op = tf.transpose
 
     if perm is None:
-        # Default value if the form is set to empty
+        # If we need to permutate: default value if the form is set to empty
         perm = (1, 0)
         
     return transpose_op(a, perm=perm, name=name)

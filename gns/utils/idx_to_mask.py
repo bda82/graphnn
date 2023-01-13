@@ -2,7 +2,7 @@ import numpy as np
 from numpy import ndarray
 
 
-def idx_to_mask(idx, l) -> ndarray:
+def get_mask_by_indexes(idx, l) -> ndarray:
     """
     Returns mask by indexes.
 
@@ -15,4 +15,5 @@ def idx_to_mask(idx, l) -> ndarray:
     """
     mask = np.zeros(l)
     mask[idx] = 1
+
     return np.array(mask, dtype=np.bool)

@@ -17,5 +17,5 @@ def deserialize_scatter(scatter):
         return scatter
     else:
         raise ValueError(
-            f"scatter must be a string or functinon call, so from the next set: {list(OP_DICT.keys())}"
+            f"scatter должен быть строкой или вызовом функции из следующего набора: {list(OP_DICT.keys())}"
         )

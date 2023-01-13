@@ -1,8 +1,8 @@
 from tensorflow.keras import (  # noqa
-    activations,
-    constraints,
-    initializers,
-    regularizers,
+    activations,  # noqa
+    constraints,  # noqa
+    initializers,  # noqa
+    regularizers,  # noqa
 )
 
 from gns.config.settings import settings_fabric
@@ -15,8 +15,8 @@ def deserialize_kwarg(key, attr):
     Attribute deserialization.
 
     Args:
-        key: ключ атрибута
-        attr: атрибут
+        key: attribute key
+        attr: attribute
     
     Returns:
         deserialized attribute

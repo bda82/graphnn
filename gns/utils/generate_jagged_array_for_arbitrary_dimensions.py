@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def pad_jagged_array(x, target_shape):
+def generate_jagged_array_for_arbitrary_dimensions(x, target_shape):
     """
     Given a jagged array of arbitrary dimensions, zero-pads all elements in the
     array to match the provided `target_shape`.
@@ -17,13 +17,21 @@ def pad_jagged_array(x, target_shape):
         a `np.array` of shape `(len(x), ) + target_shape`.
     """
     if len(x) < 1:
-        raise ValueError("Jagged array cannot be empty")
-    target_len = len(x)
+        raise ValueError(
+            f"list `x` should be empty: {x}."
+        )
+
     target_shape = tuple(
-        shp if shp != -1 else x[0].shape[j] for j, shp in enumerate(target_shape)
+        shp if shp != -1 else x[0].shape[j]
+        for j, shp in enumerate(target_shape)
     )
-    output = np.zeros((target_len,) + target_shape, dtype=x[0].dtype)
-    for i in range(target_len):
+
+    output = np.zeros(
+        (len(x),) + target_shape,
+        dtype=x[0].dtype
+    )
+
+    for i in range(len(x)):
         slc = (i,) + tuple(slice(shp) for shp in x[i].shape)
         output[slc] = x[i]
 

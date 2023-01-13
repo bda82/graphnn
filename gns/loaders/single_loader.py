@@ -1,9 +1,9 @@
 import tensorflow as tf
 
 from gns.loaders.generic_loader import GenericLoader
-from gns.utils.collate_labels_disjoint import collate_labels_disjoint
-from gns.utils.sp_matrices_to_sp_tensors import sp_matrices_to_sp_tensors
-from gns.utils.to_disjoint import to_disjoint
+from gns.utils.collate_labels_disjoint import match_list_of_labels_for_disjoint_mode
+from gns.utils.sparse_matrices_to_sparse_tensors import sparse_matrices_to_sparse_tensors
+from gns.utils.convert_node_objects_to_disjoint import convert_node_objects_to_disjoint
 
 
 class SingleLoader(GenericLoader):
@@ -60,11 +60,11 @@ class SingleLoader(GenericLoader):
 
         y = packed.pop("y_list", None)
         if y is not None:
-            y = collate_labels_disjoint(y, node_level=True)
+            y = match_list_of_labels_for_disjoint_mode(y, node_level=True)
 
-        output = to_disjoint(**packed)
+        output = convert_node_objects_to_disjoint(**packed)
         output = output[:-1]
-        output = sp_matrices_to_sp_tensors(output)
+        output = sparse_matrices_to_sparse_tensors(output)
 
         if len(output) == 1:
             output = output[0]

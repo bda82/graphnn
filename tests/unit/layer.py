@@ -7,7 +7,7 @@ from gns.config.settings import settings_fabric
 from gns.layer.cheb import ChebyshevConvolutionalLayer
 from gns.layer.gcn_convolution import GCNConvolutionalGeneralLayer
 from gns.layer.graphsage import GraphSageConvolutionalLayer
-from gns.utils.sp_matrix_to_sp_tensor import sp_matrix_to_sp_tensor
+from gns.utils.sparse_matrix_to_sparse_tensor import sparse_matrix_to_sparse_tensor
 
 settings = settings_fabric()
 
@@ -35,7 +35,7 @@ E = np.random.normal(size=(N, N, n_edge_features))
 def test_graphsage_single():
     inputs = [Input(shape=(n_node_features,)), Input(shape=(None,), sparse=True)]
 
-    input_data = [X, sp_matrix_to_sp_tensor(A)]
+    input_data = [X, sparse_matrix_to_sparse_tensor(A)]
 
     layer_instance = GraphSageConvolutionalLayer(
         **{"channels": n_channels, "activation": settings.activations.relu}
@@ -51,7 +51,7 @@ def test_graphsage_single():
 def test_graphsage_mixed():
     inputs = [Input(shape=(N, n_node_features)), Input(shape=(N,), sparse=True)]
 
-    input_data = [np.stack([X] * batch_size), sp_matrix_to_sp_tensor(A)]
+    input_data = [np.stack([X] * batch_size), sparse_matrix_to_sparse_tensor(A)]
 
     layer_instance = GraphSageConvolutionalLayer(
         **{"channels": n_channels, "activation": settings.activations.relu}
@@ -67,7 +67,7 @@ def test_graphsage_mixed():
 def test_conv_single():
     inputs = [Input(shape=(n_node_features,)), Input(shape=(None,), sparse=True)]
 
-    input_data = [X, sp_matrix_to_sp_tensor(A)]
+    input_data = [X, sparse_matrix_to_sparse_tensor(A)]
 
     layer_instance = GCNConvolutionalGeneralLayer(
         **{"channels": n_channels, "activation": settings.activations.relu}
@@ -85,7 +85,7 @@ def test_conv_mixed():
 
     inputs = [Input(shape=(N, n_node_features)), Input(shape=(N,), sparse=True)]
 
-    input_data = [X_batch, sp_matrix_to_sp_tensor(A)]
+    input_data = [X_batch, sparse_matrix_to_sparse_tensor(A)]
 
     layer_instance = GCNConvolutionalGeneralLayer(
         **{"channels": n_channels, "activation": settings.activations.relu}
@@ -101,7 +101,7 @@ def test_conv_mixed():
 def test_chebishev_conv_single():
     inputs = [Input(shape=(n_node_features,)), Input(shape=(None,), sparse=True)]
 
-    input_data = [X, sp_matrix_to_sp_tensor(A)]
+    input_data = [X, sparse_matrix_to_sparse_tensor(A)]
 
     layer_instance = ChebyshevConvolutionalLayer(
         **{
@@ -140,7 +140,7 @@ def test_chebishev_conv_batch():
 def test_chebishev_conv_mixed():
     inputs = [Input(shape=(N, n_node_features)), Input(shape=(N,), sparse=True)]
 
-    input_data = [np.stack([X] * batch_size), sp_matrix_to_sp_tensor(A)]
+    input_data = [np.stack([X] * batch_size), sparse_matrix_to_sparse_tensor(A)]
 
     layer_instance = ChebyshevConvolutionalLayer(
         **{

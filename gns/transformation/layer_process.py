@@ -1,3 +1,8 @@
+from gns.config.settings import settings_fabric
+
+settings = settings_fabric()
+
+
 class LayerPreprocess(object):
     """
     Implements the preprocessing function in the convolutional layer for the adjacency matrix
@@ -11,7 +16,7 @@ class LayerPreprocess(object):
         self.layer_class = layer_class
 
     def __call__(self, graph):
-        if graph.a is not None and hasattr(self.layer_class, "preprocess"):
+        if graph.a is not None and hasattr(self.layer_class, settings.attribute_properties.preprocess):
             graph.a = self.layer_class.preprocess(graph.a)
 
         return graph

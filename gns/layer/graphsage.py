@@ -31,12 +31,12 @@ class GraphSageConvolutionalLayer(GenericMessagePassing):
         product.
 
     Input parameters:
-        Features of nodes in the form (n_nodes, n_node_features)
-        Binary adjacency matrix of the form (n_nodes, n_nodes)
+        Features of nodes in the form `(n_nodes, n_node_features)`
+        Binary adjacency matrix of the form `(n_nodes, n_nodes)`
 
     Output parameters:
-        Features of nodes of the same shape as the input parameter, but with the last measurement changed
-            by the channels parameter.
+        Features of nodes of the same shape as the input parameter, but with the last
+        measurement changed by the `channels` parameter.
     """
 
     def __init__(
@@ -81,16 +81,20 @@ class GraphSageConvolutionalLayer(GenericMessagePassing):
             bias_constraint=bias_constraint,
             **kwargs
         )
+
         self.channels = channels
+
         self.built = False
 
     def build(self, input_shape):
         if len(input_shape) < 2:
-            raise ValueError("Invalid shape")
+            raise ValueError(
+                f"Invalid shape {input_shape}."
+            )
 
         input_dim = input_shape[0][-1]
 
-        logger.info("Build kernel")
+        logger.info("Build kernel.")
 
         self.kernel = self.add_weight(
             shape=(2 * input_dim, self.channels),
@@ -100,8 +104,10 @@ class GraphSageConvolutionalLayer(GenericMessagePassing):
             constraint=self.kernel_constraint,
         )
 
+        # If bias enabled
+
         if self.use_bias:
-            logger.info("Build bias")
+            logger.info("Build bias.")
             self.bias = self.add_weight(
                 shape=(self.channels,),
                 initializer=self.bias_initializer,
@@ -112,7 +118,7 @@ class GraphSageConvolutionalLayer(GenericMessagePassing):
 
         self.built = True
 
-    def call(self, inputs):
+    def call(self, inputs):  # noqa
         """
         Call layer.
 
@@ -123,15 +129,20 @@ class GraphSageConvolutionalLayer(GenericMessagePassing):
 
         """
         x, a, _ = self.get_inputs(inputs)
+
         a = add_self_loops(a)
 
         aggregated = self.propagate(x, a)
+
         output = tf.keras.backend.concatenate([x, aggregated])
+
         output = tf.keras.backend.dot(output, self.kernel)
 
         if self.use_bias:
             output = tf.keras.backend.bias_add(output, self.bias)
+
         output = tf.keras.backend.l2_normalize(output, axis=-1)
+
         if self.activation is not None:
             output = self.activation(output)
 

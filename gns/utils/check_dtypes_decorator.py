@@ -16,6 +16,7 @@ def check_dtypes_decorator(call):
     @wraps(call)
     def _inner_check_dtypes(inputs, **kwargs):
         inputs = check_dtypes(inputs)
+
         return call(inputs, **kwargs)
 
     return _inner_check_dtypes

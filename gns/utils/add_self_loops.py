@@ -10,35 +10,35 @@ def add_self_loops(a, fill=1.0) -> SparseTensor:
 
     Args:
         a: square SparseTensor.
-        fill: the fill parameter for new loops, it will be converted to the dtype type for the `a` attribute of the graph.
+        fill: the fill parameter for new loops, it will be converted to the `dtype` type for the `a` attribute of the graph.
     
     Returns:
-        SparseTensor with the same shape as the input attribute `a'.
+        SparseTensor with the same shape as the input attribute `a`.
     """
-    indices = a.indices
-    values = a.values
-    N = tf.shape(a, out_type=indices.dtype)[0]
+    tensor_shape = tf.shape(a, out_type=a.indices.dtype)[0]
 
-    mask_od = indices[:, 0] != indices[:, 1]
+    mask_od = a.indices[:, 0] != a.indices[:, 1]
     mask_sl = ~mask_od
-    mask_od.set_shape([None])
-    mask_sl.set_shape([None])
+    mask_od.set_shape([None])  # noqa
+    mask_sl.set_shape([None])  # noqa
 
-    indices_od = indices[mask_od]
-    indices_sl = indices[mask_sl]
+    indices_od = a.indices[mask_od]
+    indices_sl = a.indices[mask_sl]
 
-    values_sl = tf.fill((N,), tf.cast(fill, values.dtype))
+    values_sl = tf.fill((tensor_shape,), tf.cast(fill, a.values.dtype))
     values_sl = tf.tensor_scatter_nd_update(
-        values_sl, indices_sl[:, 0:1], values[mask_sl]
+        values_sl, indices_sl[:, 0:1], a.values[mask_sl]
     )
 
-    indices_sl = tf.range(N, dtype=indices.dtype)[:, None]
+    indices_sl = tf.range(tensor_shape, dtype=a.indices.dtype)[:, None]
     indices_sl = tf.repeat(indices_sl, 2, -1)
     indices = tf.concat((indices_od, indices_sl), 0)
 
-    values_od = values[mask_od]
+    values_od = a.values[mask_od]
     values = tf.concat((values_od, values_sl), 0)
 
-    out = tf.SparseTensor(indices, values, (N, N))
+    out = tf.SparseTensor(indices, values, (tensor_shape, tensor_shape))
 
-    return tf.sparse.reorder(out)
+    sparse_tensor = tf.sparse.reorder(out)
+
+    return sparse_tensor

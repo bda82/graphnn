@@ -2,7 +2,10 @@ import os
 
 import numpy as np
 
-from gns.utils.load_binary import load_binary
+from gns.utils.load_binary_file import load_binary_file
+from gns.config.settings import settings_fabric
+
+settings = settings_fabric()
 
 
 def read_file(path, name, suffix):
@@ -17,9 +20,11 @@ def read_file(path, name, suffix):
     Returns:
         file content
     """
-    full_fname = os.path.join(path, "ind.{}.{}".format(name, suffix))
+    full_filename = os.path.join(
+        path, f"{settings.datasets.dataset_prefix_index}{name}.{suffix}"
+    )
     
     if suffix == "test.index":
-        return np.loadtxt(full_fname)
+        return np.loadtxt(full_filename)
 
-    return load_binary(full_fname)
+    return load_binary_file(full_filename)

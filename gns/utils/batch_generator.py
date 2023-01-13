@@ -22,27 +22,34 @@ def batch_generator(
     Returns:
         butch of a given size batch_size
     """
+    # assert parameters
+
     if not isinstance(data, (list, tuple)):
         data = [data]
+
     if len(data) < 1:
-        raise ValueError("Данные не могут быть пустыми")
+        raise ValueError("Data should not be empty.")
+
     if len({len(item) for item in data}) > 1:
-        raise ValueError("Все входные данные должны иметь одинаковый размер (__len__)")
+        raise ValueError("All inputs should have the same length (__len__).")
 
     if epochs is None or epochs == -1:
         epochs = np.inf
-    len_data = len(data[0])
-    batches_per_epoch = int(np.ceil(len_data / batch_size))
-    epoch = 0
-    while epoch < epochs:
-        epoch += 1
+
+    batches_per_epoch_count = int(np.ceil(len(data[0]) / batch_size))
+
+    epoch_number = 0
+    while epoch_number < epochs:
+        epoch_number += 1
+
         if shuffle:
             shuffle_inplace(*data)
-        for batch in range(batches_per_epoch):
-            start = batch * batch_size
-            stop = min(start + batch_size, len_data)
-            to_yield = [item[start:stop] for item in data]
-            if len(data) == 1:
-                to_yield = to_yield[0]
 
-            yield to_yield
+        for batch in range(batches_per_epoch_count):
+            start = batch * batch_size
+            stop = min(start + batch_size, len(data[0]))
+            yield_generate = [item[start:stop] for item in data]
+            if len(data) == 1:
+                yield_generate = yield_generate[0]
+
+            yield yield_generate

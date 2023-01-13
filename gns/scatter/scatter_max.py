@@ -29,7 +29,7 @@ def scatter_max(messages, indices, n_nodes):
 
     Args:
         messages: two-dimensional (2D) or three-dimensional (3D) tensor
-        indices: one-dimensional tensor with intexes in the dimension of message nodes
+        indices: one-dimensional tensor with indexes in the dimension of message nodes
         n_nodes: measurement of output data by the dimension of nodes
     
     Returns:

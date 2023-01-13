@@ -12,12 +12,12 @@ def preprocess_features(features):
     Returns:
         features
     """
-    rowsum = np.array(features.sum(1))
+    row_summa = np.array(features.sum(1))
 
-    r_inv = np.power(rowsum, -1).flatten()
+    r_inv = np.power(row_summa, -1).flatten()
+
     r_inv[np.isinf(r_inv)] = 0.0
+
     r_mat_inv = sp.diags(r_inv)
 
-    features = r_mat_inv.dot(features)
-
-    return features
+    return r_mat_inv.dot(features)

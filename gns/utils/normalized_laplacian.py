@@ -2,7 +2,7 @@ import numpy as np
 from scipy import sparse as sp
 from scipy.sparse import coo_matrix
 
-from gns.utils.normalized_adjacency import normalized_adjacency
+from gns.utils.normalized_adjacency_matrix import normalized_adjacency_matrix
 
 
 def normalized_laplacian(A, symmetric=True) -> coo_matrix:
@@ -11,16 +11,19 @@ def normalized_laplacian(A, symmetric=True) -> coo_matrix:
 
     Args:
         A: rank 2 array or sparse matrix
-        symmetric: bool, a sign of whether to calculate symmetric nomalization
+        symmetric: bool, a sign of whether to calculate symmetric normalization
 
     Returns:
         normalized laplacian
     """
     if sp.issparse(A):
-        I = sp.eye(A.shape[-1], dtype=A.dtype)
+        result_eye = sp.eye(A.shape[-1], dtype=A.dtype)
     else:
-        I = np.eye(A.shape[-1], dtype=A.dtype)
+        result_eye = np.eye(A.shape[-1], dtype=A.dtype)
 
-    normalized_adj = normalized_adjacency(A, symmetric=symmetric)
+    normalized_adjacency_parameter = normalized_adjacency_matrix(
+        A,
+        symmetric=symmetric
+    )
 
-    return I - normalized_adj
+    return result_eye - normalized_adjacency_parameter

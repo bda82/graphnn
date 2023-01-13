@@ -67,38 +67,43 @@ class GenericMessagePassing(Layer):
         min
         prod
 
-    Any additional keyword argument of this function will be filled with propagate() if there is
-    the corresponding keyword was found.
+    Any additional keyword argument of this function will be filled with `propagate()` function
+    if there is the corresponding keyword was found.
 
     Update function update().
     ```py
     update(embeddings, **kwargs)
     ```
 
-    Updates aggregated messages to get the final node attachments equivalent to \(\gamma\) in the definition.
+    Updates aggregated messages to get the final node attachments equivalent to `gamma` parameter
+    in the model definition.
 
-    Any additional keyword argument of this function will also be filled with propagate() if there is
-    the corresponding keyword was found.
+    Any additional keyword argument of this function will also be filled with `propagate()` function
+    if there is the corresponding keyword was found.
 
     Input parameters:
         `aggregate`: str or link to function, aggregation function.
+        `kwargs`: additional class arguments compatible with the Keras layer, such as regulators, initializers, limiters, and so on
     
-    This flag can be used to control the behavior of the aggregate() function without overriding it.
+    This flag can be used to control the behavior of the `aggregate()` function without overriding it.
+
     Supported aggregations:
         sum
         mean
         max
         min
         prod
+
     If this parameter is passed as a reference to a function, this function must have the appropriate call signature
     for example, foo(updates, indices, n_nodes) and return a rank 2 tensor with the form (n_nodes, ...)
-    
-        `kwargs`: additional class arguments compatible with the Keras layer, such as regulators, initializers, limiters, and so on
+
     """
 
     def __init__(self, aggregate="sum", **kwargs):
         super().__init__(**{k: v for k, v in kwargs.items() if is_keras_kwarg(k)})
+
         self.kwargs_keys = []
+
         for key in kwargs:
             if is_layer_kwarg(key):
                 attr = kwargs[key]
@@ -109,7 +114,9 @@ class GenericMessagePassing(Layer):
         self.msg_signature = inspect.signature(self.message).parameters
         self.agg_signature = inspect.signature(self.aggregate).parameters
         self.upd_signature = inspect.signature(self.update).parameters
+
         self.agg = deserialize_scatter(aggregate)
+
         self.built = False
 
     def call(self, inputs, **kwargs):
@@ -142,9 +149,9 @@ class GenericMessagePassing(Layer):
         Propagate messages.
 
         Args:
-            x: для особенностей узлов
-            a: для матрици смежности
-            e: для атрибутов ребер графа
+            x: node features
+            a: adjacency matrix
+            e: edge features
             kwargs: additional attributes
         
         Returns:
@@ -152,28 +159,31 @@ class GenericMessagePassing(Layer):
         """
         self.n_nodes = tf.shape(x)[-2]
 
-        # Nodes receiving the message
+        # Вершины, которые получают сообщения
 
         self.index_targets = a.indices[:, 1]
 
-        # Nodes that send messages, such as neighboring
+        # Вершины, которые отправляют сообщения (например, соседние)
 
         self.index_sources = a.indices[:, 0]
 
-        # Messages
+        # Сообщения
         
-        msg_kwargs = self.get_kwargs(x, a, e, self.msg_signature, kwargs)
-        messages = self.message(x, **msg_kwargs)
+        messages_kwargs = self.get_kwargs(x, a, e, self.msg_signature, kwargs)
 
-        # Aggregation
+        messages = self.message(x, **messages_kwargs)
 
-        agg_kwargs = self.get_kwargs(x, a, e, self.agg_signature, kwargs)
-        embeddings = self.aggregate(messages, **agg_kwargs)
+        # Агрегация
 
-        # Updates
+        aggregated_kwargs = self.get_kwargs(x, a, e, self.agg_signature, kwargs)
 
-        upd_kwargs = self.get_kwargs(x, a, e, self.upd_signature, kwargs)
-        output = self.update(embeddings, **upd_kwargs)
+        embeddings = self.aggregate(messages, **aggregated_kwargs)
+
+        # Обновление
+
+        updated_kwargs = self.get_kwargs(x, a, e, self.upd_signature, kwargs)
+
+        output = self.update(embeddings, **updated_kwargs)
 
         return output
 
@@ -208,7 +218,7 @@ class GenericMessagePassing(Layer):
         Update messages.
 
         Args:
-            embeddings: embeedings
+            embeddings: embeddings
             kwargs: additional attributes
         
         Returns:
@@ -240,21 +250,22 @@ class GenericMessagePassing(Layer):
         """
         return tf.gather(x, self.index_sources, axis=-2)
 
-    def get_kwargs(self, x, a, e, signature, kwargs):
+    def get_kwargs(self, x, a, e, signature, kwargs) -> dict:
         """
         Process attributes.
 
         Args:
-            x: для особенностей узлов
-            a: для матрици смежности
-            e: для атрибутов ребер графа
-            signature: сигнатуры
+            x: node features
+            a: adjacency matrix
+            e: edge features
+            signature: signatures
             kwargs: additional attributes
 
         Returns:
 
         """
         output = {}
+
         for k in signature.keys():
             if signature[k].default is inspect.Parameter.empty or k == "kwargs":
                 pass
@@ -302,13 +313,24 @@ class GenericMessagePassing(Layer):
         return x, a, e
 
     def get_config(self) -> dict:
-        mp_config = {"aggregate": serialize_scatter(self.agg)}
+        """
+        Map config with some instances.
+        """
+        mapped_config = {"aggregate": serialize_scatter(self.agg)}
+
         keras_config = {}
+
         for key in self.kwargs_keys:
             keras_config[key] = serialize_kwarg(key, getattr(self, key))
+
         base_config = super().get_config()
 
-        return {**base_config, **keras_config, **mp_config, **self.config}
+        return {
+            **base_config,
+            **keras_config,
+            **mapped_config,
+            **self.config
+        }
 
     @property
     def config(self) -> dict:
@@ -316,6 +338,9 @@ class GenericMessagePassing(Layer):
 
     @staticmethod
     def preprocess(a):
+        """
+        Just dummy preprocess - we can define it for class inheritance.
+        """
         return a
 
 

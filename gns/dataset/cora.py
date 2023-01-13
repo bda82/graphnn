@@ -6,7 +6,7 @@ settings = settings_fabric()
 
 class Cora(Citation):
     """
-    Cora dataset alias.
+    Cora dataset alias for Citation class.
     """
 
     def __init__(self, random_split: bool = False, normalize_x: bool = False, **kwargs):

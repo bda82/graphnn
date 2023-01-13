@@ -5,9 +5,9 @@ from scipy import sparse as sp
 from tensorflow import SparseTensorSpec, TensorSpec
 
 
-def get_spec(x) -> Type[SparseTensorSpec | TensorSpec]:
+def get_specification(x) -> Type[SparseTensorSpec | TensorSpec]:
     """
-    Returns a specification (description or metadata) for a tensor of the tenzorflow type.Tensor.
+    Returns a specification (description or metadata) for a tensor of the tensorflow `type.Tensor`.
 
     Args:
         x: object for explain

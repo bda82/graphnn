@@ -55,7 +55,9 @@ class GlobalPoolLayer(Layer):
             return self.pooling_op(X, I)
         else:
             return self.batch_pooling_op(
-                X, axis=-2, keepdims=(self.data_mode == settings.models.single)
+                X,
+                axis=-2,
+                keepdims=(self.data_mode == settings.models.single)
             )
 
     def compute_output_shape(self, input_shape):
