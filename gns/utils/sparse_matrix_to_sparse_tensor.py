@@ -4,7 +4,7 @@ from scipy import sparse as sp
 from tensorflow import SparseTensor
 
 
-def sp_matrix_to_sp_tensor(x) -> SparseTensor:
+def sparse_matrix_to_sparse_tensor(x) -> SparseTensor:
     """
     Converts a sparse Scipy matrix into a sparse tensor.
     
@@ -18,12 +18,14 @@ def sp_matrix_to_sp_tensor(x) -> SparseTensor:
         SparseTensor.
     """
     if len(x.shape) != 2:
-        raise ValueError("x must have rank 2")
+        raise ValueError("`x` should have rank 2")
 
     row, col, values = sp.find(x)
 
     out = tf.SparseTensor(
-        indices=np.array([row, col]).T, values=values, dense_shape=x.shape
+        indices=np.array([row, col]).T,
+        values=values,
+        dense_shape=x.shape
     )
     
     return tf.sparse.reorder(out)

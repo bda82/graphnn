@@ -21,8 +21,9 @@ def rescale_laplacian(L, lmax=None) -> coo_matrix:
         laplacian
     """
     if lmax is None:
+        issparse_predicate = sp.issparse(L)
         try:
-            if sp.issparse(L):
+            if issparse_predicate:
                 lmax = sp.linalg.eigsh(L, 1, which="LM", return_eigenvectors=False)[0]
             else:
                 n = L.shape[-1]
@@ -31,10 +32,8 @@ def rescale_laplacian(L, lmax=None) -> coo_matrix:
             lmax = 2
 
     if sp.issparse(L):
-        I = sp.eye(L.shape[-1], dtype=L.dtype)
+        result_eye = sp.eye(L.shape[-1], dtype=L.dtype)
     else:
-        I = np.eye(L.shape[-1], dtype=L.dtype)
+        result_eye = np.eye(L.shape[-1], dtype=L.dtype)
 
-    L_scaled = (2.0 / lmax) * L - I
-
-    return L_scaled
+    return (2.0 / lmax) * L - result_eye

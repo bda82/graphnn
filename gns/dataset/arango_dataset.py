@@ -1,4 +1,3 @@
-import sys
 import os
 import numpy as np
 from gns.graph.graph import Graph
@@ -20,102 +19,113 @@ class ArangoDataset(Dataset):
     def download(self):
 
         # Create the directory
-        os.mkdir(self.path)
+
+        os.makedirs(self.path, exist_ok=True)
 
         # Initialize the ArangoDB client.
+
         client = ArangoClient()
 
         # Connect to "_system" database as root user.
+
         db = client.db('_system', username='root', password='root_pass')
 
         # Get list of users
-        uCollection = db.collection('users')
-        users = uCollection.all()  # probably better to use .ids()
+
+        user_collection = db.collection('users')
+        users = user_collection.all()  # probably better to use .ids()
         users = np.fromiter(users, dtype=np.dtype(dict))
         users = sorted(users, key=lambda x: int(x['id']))
 
         # Get list of competencies
-        cCollection = db.collection('competencies')
-        competencies = cCollection.all()
+
+        competencies_collection = db.collection('competencies')
+        competencies = competencies_collection.all()
         competencies = np.fromiter(competencies, dtype=np.dtype(dict))
         competencies = sorted(competencies, key=lambda x: int(x['id']))
-        cCount = len(competencies)
+        competencies_count = len(competencies)
 
         # User is an X axis
         for user in users:
-            userExtId = user['id']
-            userGraph = 'user' + str(userExtId)
-            userId = user["_id"]
-            userName = user["name"]
-            print(">>>>", userGraph, userId, userName)
+            user_external_id = user['id']
+            user_graph = 'user' + str(user_external_id)
+            user_id = user["_id"]
+            user_name = user["name"]
+            print(">>>>", user_graph, user_id, user_name)
 
             # Build X axis
-            x = np.zeros((cCount + 1, 1))  # competencies count plus 1 user (root of graph)
+
+            x = np.zeros((competencies_count + 1, 1))  # competencies count plus 1 user (root of graph)
+
             x[0] = 1  # zero element is user and it's equal 1
 
             # Build A axis filled by zeros
-            a = np.zeros((cCount + 1, cCount + 1))
+
+            a = np.zeros((competencies_count + 1, competencies_count + 1))
 
             # Competency is an A axis
-            for compFrom in competencies:
-                compFromId = compFrom["_id"]
-                compFromExtId = compFrom["id"]
-                compFromName = compFrom["name"]
+            for competence_from in competencies:
+                comp_from_id = competence_from["_id"]
+                comp_from_ext_id = competence_from["id"]
+                comp_from_name = competence_from["name"]
 
-                #
                 # If vacancy connected to competition directly
-                #
+                # Build SQL-like query
 
-                # Build query
                 query = f'FOR v, e\n' \
                         f'  IN ANY SHORTEST_PATH\n' \
-                        f'  "{userId}" TO "{compFromId}"\n' \
-                        f'  GRAPH "{userGraph}"\n' \
+                        f'  "{user_id}" TO "{comp_from_id}"\n' \
+                        f'  GRAPH "{user_graph}"\n' \
                         "  OPTIONS {weightAttribute:'distance'}\n" \
                         "  RETURN v._key"
 
                 # If not empty, then path is exists
-                vConnected = db.aql.execute(query)
-                vCount = sum(1 for _ in vConnected)
+
+                v_connected = db.aql.execute(query)
+                v_count = sum(1 for _ in v_connected)
 
                 # Check for a non-zero count
-                if vCount == 2:
+                if v_count == 2:
                     # Skip duplicates
-                    if a[0][int(compFromExtId) - 1] == 0:
-                        print("|", userName, '->', compFromName)
-                        a[int(compFromExtId) - 1][0] = 1
+                    if a[0][int(comp_from_ext_id) - 1] == 0:
+                        print("|", user_name, '->', comp_from_name)
+                        a[int(comp_from_ext_id) - 1][0] = 1
 
                 # Detect if competency connected to another one
-                for compTo in competencies:
-                    compToId = compTo["_id"]
-                    compToExtId = compTo["id"]
-                    compToName = compTo["name"]
+
+                for comp_to in competencies:
+                    comp_to_id = comp_to["_id"]
+                    comp_to_ext_id = comp_to["id"]
+                    comp_to_name = comp_to["name"]
 
                     # Skip if same
-                    if compFromId == compToId:
+                    if comp_from_id == comp_to_id:
                         continue
 
-                    # Build query
+                    # Build SQL-like query
                     query = f'FOR v, e\n' \
                             f'  IN ANY SHORTEST_PATH\n' \
-                            f'  "{compFromId}" TO "{compToId}"\n' \
-                            f'  GRAPH "{userGraph}"\n' \
+                            f'  "{comp_from_id}" TO "{comp_to_id}"\n' \
+                            f'  GRAPH "{user_graph}"\n' \
                             "  OPTIONS {weightAttribute:'distance'}\n" \
                             "  RETURN v._key"
 
                     # If not empty, then path is exists
-                    vConnected = db.aql.execute(query)
-                    vCount = sum(1 for _ in vConnected)
+
+                    v_connected = db.aql.execute(query)
+                    v_count = sum(1 for _ in v_connected)
 
                     # Check for a non-zero count
-                    if vCount == 2:
+
+                    if v_count == 2:
                         # Skip duplicates
-                        if a[int(compToExtId) - 1][int(compFromExtId) - 1] == 0:
-                            print("|", userName, compFromName, "->", compToName)
-                            a[int(compFromExtId) - 1][int(compToExtId) - 1] = 1
+                        if a[int(comp_to_ext_id) - 1][int(comp_from_ext_id) - 1] == 0:
+                            print("|", user_name, comp_from_name, "->", comp_to_name)
+                            a[int(comp_from_ext_id) - 1][int(comp_to_ext_id) - 1] = 1
 
             # Save graph of user
-            filename = os.path.join(self.path, f'user_{userExtId}')
+
+            filename = os.path.join(self.path, f'user_{user_external_id}')
             np.savez(
                 filename,
                 x=x,
@@ -123,24 +133,26 @@ class ArangoDataset(Dataset):
             )
 
     def read(self):
-
+        """Read data file"""
         mode = None
         if self.mode == 'u4v':
             mode = "user_*.npz"
         if self.mode == 'v4u':
             mode = "vacancy_*.npz"
-        if mode == None:
+        if mode is None:
             raise Exception('Mode is not supported')
 
         # Read files from disk
+
         _graphs = glob.glob(self.path + "/" + mode)
 
         # Output array
+
         graphs = []
 
         # Read graphs
+
         for graph in _graphs:
-            # Read from file
             data = np.load(graph, allow_pickle=True)
 
             # Process parameters

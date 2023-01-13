@@ -5,7 +5,7 @@ from tensorflow.keras import backend as KerasBackend  # noqa
 
 from gns.config.settings import settings_fabric
 from gns.layer.convolution import ConvolutionalGeneralLayer
-from gns.utils.modal_dot import modal_dot
+from gns.utils.dot_production_modal import dot_production_modal
 from gns.utils.normalized_laplacian import normalized_laplacian
 from gns.utils.rescale_laplacian import rescale_laplacian
 
@@ -78,11 +78,13 @@ class ChebyshevConvolutionalLayer(ConvolutionalGeneralLayer):
 
     def build(self, input_shape) -> None:
         if len(input_shape) < 2:
-            raise ValueError("Wrong input form")
+            raise ValueError(
+                f"Wrong input form {input_shape}."
+            )
 
         input_dim = input_shape[0][-1]
 
-        logger.info("Add a kernel")
+        logger.info("Add a kernel.")
 
         self.kernel = self.add_weight(
             shape=(self.K, input_dim, self.channels),
@@ -93,8 +95,9 @@ class ChebyshevConvolutionalLayer(ConvolutionalGeneralLayer):
         )
 
         # If bias is available
+
         if self.use_bias:
-            logger.info("Build bias")
+            logger.info("Build bias.")
             self.bias = self.add_weight(
                 shape=(self.channels,),
                 initializer=self.bias_initializer,
@@ -118,18 +121,20 @@ class ChebyshevConvolutionalLayer(ConvolutionalGeneralLayer):
         """
         x, a = inputs
 
-        T_0 = x
+        producted_0 = x
 
-        output = KerasBackend.dot(T_0, self.kernel[0])
+        output = KerasBackend.dot(producted_0, self.kernel[0])
 
         if self.K > 1:
-            T_1 = modal_dot(a, x)
-            output += KerasBackend.dot(T_1, self.kernel[1])
+            producted_1 = dot_production_modal(a, x)
+            output += KerasBackend.dot(producted_1, self.kernel[1])
 
         for k in range(2, self.K):
-            T_2 = 2 * modal_dot(a, T_1) - T_0
-            output += KerasBackend.dot(T_2, self.kernel[k])
-            T_0, T_1 = T_1, T_2
+            producted_2 = 2 * dot_production_modal(a, producted_1) - producted_0
+            output += KerasBackend.dot(producted_2, self.kernel[k])
+            producted_0, producted_1 = producted_1, producted_2
+
+        # If bias enabled
 
         if self.use_bias:
             output = KerasBackend.bias_add(output, self.bias)
@@ -137,13 +142,14 @@ class ChebyshevConvolutionalLayer(ConvolutionalGeneralLayer):
         if mask is not None:
             output *= mask[0]
 
-        output = self.activation(output)
-
-        return output
+        return self.activation(output)
 
     @property
-    def config(self):
-        return {"channels": self.channels, "KerasBackend": self.K}
+    def config(self) -> dict:
+        return {
+            "channels": self.channels,
+            "KerasBackend": self.K
+        }
 
     @staticmethod
     def preprocess(a):

@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class Graph:
     """
-    The main container for Graph representation.
+    The main object for Graph representation.
     The data associated with this class should be distributed according to the following attributes:
         `x`: for node features
         `a`: for adjacency matrix
@@ -59,20 +59,23 @@ class Graph:
 
         Args:
             `x`: `np.array`, node features in the form `(n_nodes, n_node_features)`
-            `a`: `np.array` or `scipy.sparse` matrix, connectivity matrix
-                  with the form `(n_nodes, n_nodes)`
-            `e`: `np.array`, edge features in the form `(n_nodes, n_nodes, n_edge_features)`
-                  or `(n_edges, n_edge_features)`
-            `y`: `np.array`, nodes or graph labels in the form `(n_nodes, n_labels)`
-                  or `(n_labels, )`
+            `a`: `np.array` or `scipy.sparse` matrix, connectivity matrix with the form `(n_nodes, n_nodes)`
+            `e`: `np.array`, edge features in the form `(n_nodes, n_nodes, n_edge_features)` or `(n_edges, n_edge_features)`
+            `y`: `np.array`, nodes or graph labels in the form `(n_nodes, n_labels)` or `(n_labels, )`
             **kwargs: additional attributes
         """
         if x is not None:
             if not isinstance(x, np.ndarray):
-                raise ValueError(f"Unsupported `x` type: {type(x)}")
+                raise ValueError(
+                    f"Unsupported `x` type: {type(x)}"
+                )
+
             if len(x.shape) == 1:
                 x = x[:, None]
-                warnings.warn(f"`x` will be automatically brought to the form {x.shape}")
+                warnings.warn(
+                    f"`x` will be automatically brought to the form {x.shape}"
+                )
+
             if len(x.shape) != 2:
                 raise ValueError(
                     f"`x` must have the form `(n_nodes, n_node_features)`, set rank "
@@ -81,7 +84,10 @@ class Graph:
 
         if a is not None:
             if not (isinstance(a, np.ndarray) or sp.isspmatrix(a)):
-                raise ValueError(f"Unsupported `a` type: {type(a)}")
+                raise ValueError(
+                    f"Unsupported `a` type: {type(a)}"
+                )
+
             if len(a.shape) != 2:
                 raise ValueError(
                     f"`a` must have a form `(n_nodes, n_nodes)`, set rank "
@@ -90,7 +96,10 @@ class Graph:
 
         if e is not None:
             if not isinstance(e, np.ndarray):
-                raise ValueError(f"Unsupported `e` type: {type(e)}")
+                raise ValueError(
+                    f"Unsupported `e` type: {type(e)}"
+                )
+
             if len(e.shape) not in (2, 3):
                 raise ValueError(
                     f"`e` must have a form `(n_edges, n_edge_features)` or "
@@ -188,7 +197,7 @@ class Graph:
         )
 
     @property
-    def n_nodes(self):
+    def n_nodes(self) -> int:
         """
         Graph number of nodes.
 
@@ -199,11 +208,9 @@ class Graph:
             return self.x.shape[-2]
         elif self.a is not None:
             return self.a.shape[-1]
-        else:
-            return None
 
     @property
-    def n_edges(self):
+    def n_edges(self) -> int:
         """
         Graph number of edges.
 
@@ -211,14 +218,12 @@ class Graph:
 
         """
         if sp.issparse(self.a):
-            return self.a.nnz
+            return self.a.nnz  # noqa
         elif isinstance(self.a, np.ndarray):
             return np.count_nonzero(self.a)
-        else:
-            return None
 
     @property
-    def n_node_features(self):
+    def n_node_features(self) -> int:
         """
         The size of the features of the vertices of the graph.
 
@@ -227,11 +232,9 @@ class Graph:
         """
         if self.x is not None:
             return self.x.shape[-1]
-        else:
-            return None
 
     @property
-    def n_edge_features(self):
+    def n_edge_features(self) -> int:
         """
         The size of the features of the edges of the graph.
 
@@ -240,11 +243,9 @@ class Graph:
         """
         if self.e is not None:
             return self.e.shape[-1]
-        else:
-            return None
 
     @property
-    def n_labels(self):
+    def n_labels(self) -> int:
         """
         Size of graph labels.
 
@@ -254,11 +255,9 @@ class Graph:
         if self.y is not None:
             shp = np.shape(self.y)
             return 1 if len(shp) == 0 else shp[-1]
-        else:
-            return None
 
     @property
-    def keys(self):
+    def keys(self) -> list:
         """
         Graph attribute Keys.
 

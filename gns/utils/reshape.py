@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow import SparseTensor
-from tensorflow.keras import backend as K  # noqa
+from tensorflow.keras import backend as KerasBackend  # noqa
 
 
 def reshape(a, shape=None, name: str | None = None) -> SparseTensor:
@@ -15,9 +15,9 @@ def reshape(a, shape=None, name: str | None = None) -> SparseTensor:
     Returns:
         tensor or SparseTensor.
     """
-    if K.is_sparse(a):
-        reshape_op = tf.sparse.reshape
+    if KerasBackend.is_sparse(a):
+        reshape_result = tf.sparse.reshape
     else:
-        reshape_op = tf.reshape
+        reshape_result = tf.reshape
 
-    return reshape_op(a, shape=shape, name=name)
+    return reshape_result(a, shape=shape, name=name)

@@ -5,7 +5,7 @@ from tensorflow.keras import backend as KeasBackend  # noqa
 from gns.config.settings import settings_fabric
 from gns.layer.convolution import ConvolutionalGeneralLayer
 from gns.utils.gcn_filter import gcn_filter
-from gns.utils.modal_dot import modal_dot
+from gns.utils.dot_production_modal import dot_production_modal
 
 settings = settings_fabric()
 
@@ -90,7 +90,7 @@ class GCNConvolutionalGeneralLayer(ConvolutionalGeneralLayer):
 
         input_dim = input_shape[0][-1]
 
-        logger.info("Create kernel")
+        logger.info("Create kernel.")
 
         self.kernel = self.add_weight(
             shape=(input_dim, self.channels),
@@ -128,7 +128,7 @@ class GCNConvolutionalGeneralLayer(ConvolutionalGeneralLayer):
         x, a = inputs
 
         output = KeasBackend.dot(x, self.kernel)
-        output = modal_dot(a, output)
+        output = dot_production_modal(a, output)
 
         if self.use_bias:
             output = KeasBackend.bias_add(output, self.bias)

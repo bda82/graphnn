@@ -4,8 +4,8 @@ from tensorflow.keras import backend as K  # noqa
 
 from gns.config.settings import settings_fabric
 from gns.layer.convolution import ConvolutionalGeneralLayer
-from gns.utils.normalized_adjacency import normalized_adjacency
-from gns.utils.modal_dot import modal_dot
+from gns.utils.normalized_adjacency_matrix import normalized_adjacency_matrix
+from gns.utils.dot_production_modal import dot_production_modal
 
 settings = settings_fabric()
 
@@ -25,7 +25,7 @@ class GCSConvolutionalGeneralLayer(ConvolutionalGeneralLayer):
     Input parameters:
         Node features of shape `([batch], n_nodes, n_node_features)`;
         Normalized adjacency matrix of shape `([batch], n_nodes, n_nodes)`
-        (can be computed with `gns.utils.normalized_adjacency`)
+        (can be computed with `gns.utils.normalized_adjacency_matrix()`)
 
     Output parameters:
         Node features with the same shape as the input, but with the last dimension changed to `channels`.
@@ -85,7 +85,7 @@ class GCSConvolutionalGeneralLayer(ConvolutionalGeneralLayer):
         assert len(input_shape) >= 2
         input_dim = input_shape[0][-1]
 
-        logger.info("Create the first kernel")
+        logger.info("Create the first kernel.")
 
         self.kernel_1 = self.add_weight(
             shape=(input_dim, self.channels),
@@ -95,7 +95,7 @@ class GCSConvolutionalGeneralLayer(ConvolutionalGeneralLayer):
             constraint=self.kernel_constraint,
         )
 
-        logger.info("Create the second kernel")
+        logger.info("Create the second kernel.")
 
         self.kernel_2 = self.add_weight(
             shape=(input_dim, self.channels),
@@ -132,7 +132,7 @@ class GCSConvolutionalGeneralLayer(ConvolutionalGeneralLayer):
         x, a = inputs
 
         output = K.dot(x, self.kernel_1)
-        output = modal_dot(a, output)
+        output = dot_production_modal(a, output)
         skip = K.dot(x, self.kernel_2)
         output += skip
 
@@ -150,7 +150,7 @@ class GCSConvolutionalGeneralLayer(ConvolutionalGeneralLayer):
 
     @staticmethod
     def preprocess(a):
-        return normalized_adjacency(a)
+        return normalized_adjacency_matrix(a)
 
 
 def gsn_convolutional_general_layer_fabric(

@@ -1,10 +1,10 @@
 import tensorflow as tf
 
 from gns.loaders.generic_loader import GenericLoader
-from gns.utils.collate_labels_disjoint import collate_labels_disjoint
-from gns.utils.sp_matrices_to_sp_tensors import sp_matrices_to_sp_tensors
-from gns.utils.to_disjoint import to_disjoint
-from gns.utils.to_tf_signature import to_tf_signature
+from gns.utils.collate_labels_disjoint import match_list_of_labels_for_disjoint_mode
+from gns.utils.sparse_matrices_to_sparse_tensors import sparse_matrices_to_sparse_tensors
+from gns.utils.convert_node_objects_to_disjoint import convert_node_objects_to_disjoint
+from gns.utils.to_tensorflow_signature import to_tensorflow_signature
 from gns.utils.prepend_none import prepend_none
 
 
@@ -59,10 +59,10 @@ class DisjointLoader(GenericLoader):
 
         y = packed.pop("y_list", None)
         if y is not None:
-            y = collate_labels_disjoint(y, node_level=self.node_level)
+            y = match_list_of_labels_for_disjoint_mode(y, node_level=self.node_level)
 
-        output = to_disjoint(**packed)
-        output = sp_matrices_to_sp_tensors(output)
+        output = convert_node_objects_to_disjoint(**packed)
+        output = sparse_matrices_to_sparse_tensors(output)
 
         if len(output) == 1:
             output = output[0]
@@ -95,7 +95,7 @@ class DisjointLoader(GenericLoader):
         signature["i"]["shape"] = (None,)
         signature["i"]["dtype"] = tf.as_dtype(tf.int64)
 
-        return to_tf_signature(signature)
+        return to_tensorflow_signature(signature)
 
 
 def disjoint_loader_fabric(

@@ -80,16 +80,16 @@ The library has a sufficient number of utilities and auxiliary functions:
 - [degree_power](./gns/utils/degree_power.py): Calculates the deviation
 - [deserialize_kwarg](./gns/utilsdeserialize_kwarg.py): Deserialization of arguments
 - [deserialize_scatter](./gns/utils/deserialize_scatter.py): Deserialization of scattering (`scatter`)
-- [dot](./gns/utils/dot.py): Calculates the multiplication of a @b for a and b of the same rank (both 2 or both 3 ranks).
+- [dot](./gns/utils/dot_production.py): Calculates the multiplication of a @b for a and b of the same rank (both 2 or both 3 ranks).
 - [gcn_filter](./gns/utils/gcn_filter.py): Filters garf.
 - [get_spec](./gns/utils/get_spec.py): Returns a specification (description or metadata) for a tensorflow type tensor.Tensor.
 - [idx_to_mask](./gns/utils/idx_to_mask.py): Returns the mask by indexes.
-- [load_binary](./gns/utils/load_binary.py): Loads a value from a file serialized by the pickle module.
+- [load_binary](./gns/utils/load_binary_file.py): Loads a value from a file serialized by the pickle module.
 - [mask_to_float_weights](./gns/utils/mask_to_float_weights.py): Converts the bit mask into simple weights to calculate the average losses across the network nodes.
 - [mask_to_simple_weights](./gns/utils/mask_to_simple_weights.py): Converts the bit mask into simple weights to calculate the average losses across the network nodes.
-- [mixed_mode_dot](./gns/utils/mixed_mode_dot.py): Calculates the equivalent of the `tf.einsum function('ij, bjk->bik', a, b)`.
-- [modal_dot](./gns/utils/modal_dot.py): Calculates matrix multiplication for a and b.
-- [normalized_adjacency](./gns/utils/normalized_adjacency.py): Normalizes a given adjacency matrix.
+- [mixed_mode_dot](./gns/utils/dot_production_in_mixed_mode.py): Calculates the equivalent of the `tf.einsum function('ij, bjk->bik', a, b)`.
+- [modal_dot](./gns/utils/dot_production_modal.py): Calculates matrix multiplication for a and b.
+- [normalized_adjacency](./gns/utils/normalized_adjacency_matrix.py): Normalizes a given adjacency matrix.
 - [normalized_laplacian](./gns/utils/normalized_laplacian.py): Computes the normalized Laplacian of a given adjacency matrix.
 - [preprocess_features](./gns/utils/preprocess_features.py): Computing features.
 - [read_file](./gns/utils/read_file.py): Reading the file.
@@ -98,10 +98,10 @@ The library has a sufficient number of utilities and auxiliary functions:
 - [serialize_kwarg](./gns/utils/serialize_kwarg.py): Serialization of attributes.
 - [serialize_scatter](./gns/utils/serialize_scatter.py): Serialization of the scatter.
 - [shuffle_inplace](./gns/utils/shuffle_inplace.py): Shuffle `np.random.shuffle`.
-- [sp_matrices_to_sp_tensors](./gns/utils/sp_matrices_to_sp_tensors.py): Transformation of Scipy sparse matrices into a tensor.
-- [sp_matrix_to_sp_tensor](./gns/utils/sp_matrix_to_sp_tensor.py): Converts a sparse Scipy matrix into a sparse tensor.
-- [to_disjoint](./gns/utils/to_disjoint.py): Converts lists of node objects, adjacency matrices, and boundary objects into disjoint mode.
-- [to_tf_signature](./gns/utils/to_tf_signature.py): Converts a dataset signature to a TensorFlow signature.
+- [sp_matrices_to_sp_tensors](./gns/utils/sparse_matrices_to_sparse_tensors.py): Transformation of Scipy sparse matrices into a tensor.
+- [sp_matrix_to_sp_tensor](./gns/utils/sparse_matrix_to_sparse_tensor.py): Converts a sparse Scipy matrix into a sparse tensor.
+- [to_disjoint](./gns/utils/convert_node_objects_to_disjoint.py): Converts lists of node objects, adjacency matrices, and boundary objects into disjoint mode.
+- [to_tf_signature](./gns/utils/to_tensorflow_signature.py): Converts a dataset signature to a TensorFlow signature.
 - [transpose](./gns/utils/transpose.py): Transposes parameter `a`, automatically coping with sparsity using overloaded TensorFLow functions.
 
 ### Configuration, parameters and settings

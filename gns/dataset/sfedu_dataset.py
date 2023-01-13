@@ -10,6 +10,9 @@ logger = logging.getLogger(__name__)
 
 
 class SfeduDataset(Dataset):
+    """
+    Example for competence Dataset.
+    """
     def __init__(
         self,
         n_samples=100,

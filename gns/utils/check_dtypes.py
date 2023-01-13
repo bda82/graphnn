@@ -3,7 +3,11 @@ import logging
 import tensorflow as tf
 from tensorflow import IndexedSlices, SparseTensor, Tensor
 
+from gns.config.settings import settings_fabric
+
 logger = logging.getLogger(__name__)
+
+settings = settings_fabric()
 
 
 def check_dtypes(inputs) -> list[Tensor | IndexedSlices | SparseTensor | object]:
@@ -17,7 +21,7 @@ def check_dtypes(inputs) -> list[Tensor | IndexedSlices | SparseTensor | object]
 
     """
     for value in inputs:
-        if not hasattr(value, "dtype"):
+        if not hasattr(value, settings.attribute_properties.dtype):
             return inputs
 
     if len(inputs) == 2:
@@ -33,13 +37,15 @@ def check_dtypes(inputs) -> list[Tensor | IndexedSlices | SparseTensor | object]
         tf.float32,
         tf.float64,
     )
+
     if a.dtype in (tf.int32, tf.int64) and x.dtype in valid_types:
         logger.warning(
-            f"A sparse matrix of type (d type) {a.dtype} is incompatible with the dtype "
-            f" type of node features {x.dtype} and will be automatically converted to type "
-            f"{x.dtype}."
+            f"Sparse matrix of type (dtype) {a.dtype}"
+            f" incompatible with the type {settings.attribute_properties.dtype}"
+            f"and node features {x.dtype} - will be converted (type cast) to"
+            f" {x.dtype}."
         )
+
         a = tf.cast(a, x.dtype)
 
-    output = [_ for _ in [x, a, e] if _ is not None]
-    return output
+    return [_ for _ in [x, a, e] if _ is not None]

@@ -4,7 +4,7 @@ from typing import Any
 import joblib
 
 
-def load_binary(filename: str | bytes | PathLike[str] | PathLike[bytes] | int) -> Any:
+def load_binary_file(filename: str | bytes | PathLike[str] | PathLike[bytes] | int) -> Any:
     """
     Load binary data from file, serialized with pickle module
     

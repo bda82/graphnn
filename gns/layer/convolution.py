@@ -44,13 +44,21 @@ class ConvolutionalGeneralLayer(Layer):
         self.call = check_dtypes_decorator(self.call)
 
     def build(self, input_shape) -> None:
+        """Just set property now."""
         self.built = True
 
     def call(self, inputs):
+        """
+        Should be redefined.
+        """
         raise NotImplementedError
 
     def get_config(self) -> dict:
+        """
+        Combine configs.
+        """
         base_config = super().get_config()
+
         keras_config = {}
 
         for key in self.kwargs_keys:

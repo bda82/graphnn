@@ -12,7 +12,7 @@ from gns.config.settings import settings_fabric
 from gns.dataset.dataset import Dataset
 from gns.dataset.dataset_folder import DATASET_FOLDER
 from gns.graph.graph import Graph
-from gns.utils.idx_to_mask import idx_to_mask
+from gns.utils.idx_to_mask import get_mask_by_indexes
 from gns.utils.preprocess_features import preprocess_features
 from gns.utils.read_file import read_file
 
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class Citation(Dataset):
     """
-    Data sets for citation:
+    Data sets for citation dataset:
         - Cora
         - Citeseer
         - Pubmed.
@@ -33,7 +33,7 @@ class Citation(Dataset):
     associated with each node.
 
     For example, two object nodes are connected to each other if
-    if one of them quotes the other.
+    one of them quotes the other.
 
     The train, test and validation sections are set as binary masks and
     are accessible via the `mask_tr`, `mask_va` and `mask_te` attributes.
@@ -41,14 +41,13 @@ class Citation(Dataset):
     Input parameters:
         name: symbolic name of the dataset (`cora", `citeseer", or `pubmed")
         random_split: if True, returns a random division of the dataset into subsets
-            (20 nodes per class for training, 30 nodes per class for validation and N remaining nodes
-            for testing).
+            (20 nodes per class for training, 30 nodes per class for validation and N remaining nodes for testing).
         normalize_x: if True, the features are normalized
-        dtype: the dtype parameter from the numpy module for graph data.
+        dtype: the `dtype` parameter from the numpy module for graph data.
     """
 
-    url = settings.urls.citation_url
-    suffixes = settings.constants.citation_suffixes
+    citation_url = settings.urls.citation_url
+    citation_suffixes = settings.constants.citation_suffixes
 
     def __init__(
         self,
@@ -77,12 +76,19 @@ class Citation(Dataset):
 
     @property
     def path(self) -> str:
-        return osp.join(DATASET_FOLDER, settings.folders.citation, self.name)
+        return osp.join(
+            DATASET_FOLDER,
+            settings.folders.citation,
+            self.name
+        )
 
     def read(self) -> list[Graph]:
-        logger.info(f"Get objects.")
-        objects = [read_file(self.path, self.name, s) for s in self.suffixes]
+        logger.info(f"Get cora objects.")
+        objects = [read_file(self.path, self.name, s) for s in self.citation_suffixes]
         objects = [o.A if sp.issparse(o) else o for o in objects]
+
+        # open objects into variables
+
         x, y, tx, ty, allx, ally, graph, idx_te = objects
 
         idx_tr = np.arange(y.shape[0])
@@ -103,44 +109,50 @@ class Citation(Dataset):
 
         x = np.vstack((allx, tx))
         y = np.vstack((ally, ty))
+
         x[idx_te, :] = x[idx_te_sort, :]
         y[idx_te, :] = y[idx_te_sort, :]
 
-        logger.info(f"Normalization of features: {self.normalize_x}.")
+        logger.info(f"If Normalization of features enabled: {self.normalize_x}.")
 
         if self.normalize_x:
             logger.info("Preparation of node features.")
             x = preprocess_features(x)
 
-        logger.info(f"Random separation: {self.random_split}.")
+        logger.info(f"If Random separation enabled: {self.random_split}.")
 
         if self.random_split:
             logger.info("Preparing a random split.")
-            indices = np.arange(y.shape[0])
-            n_classes = y.shape[1]
+            y_indices = np.arange(y.shape[0])
+            y_class_number = y.shape[1]
             idx_tr, idx_te, _, y_te = train_test_split(
-                indices, y, train_size=20 * n_classes, stratify=y
+                y_indices,
+                y,
+                train_size=20 * y_class_number,
+                stratify=y
             )
             idx_va, idx_te = train_test_split(
-                idx_te, train_size=30 * n_classes, stratify=y_te
+                idx_te,
+                train_size=30 * y_class_number,
+                stratify=y_te
             )
 
-        logger.info("Formation of the adjacency matrix.")
+        logger.info("Adjacency matrix format.")
 
-        a = nx.adjacency_matrix(nx.from_dict_of_lists(graph))
-        a.setdiag(0)
-        a.eliminate_zeros()
+        adjacency_matrix = nx.adjacency_matrix(nx.from_dict_of_lists(graph))
+        adjacency_matrix.setdiag(0)
+        adjacency_matrix.eliminate_zeros()
 
-        logger.info(f"Creating masks for training/validation/testing")
+        logger.info(f"Creating masks for training/validation/testing.")
 
-        self.mask_tr = idx_to_mask(idx_tr, y.shape[0])
-        self.mask_va = idx_to_mask(idx_va, y.shape[0])
-        self.mask_te = idx_to_mask(idx_te, y.shape[0])
+        self.mask_tr = get_mask_by_indexes(idx_tr, y.shape[0])
+        self.mask_va = get_mask_by_indexes(idx_va, y.shape[0])
+        self.mask_te = get_mask_by_indexes(idx_te, y.shape[0])
 
         return [
             Graph(
                 x=x.astype(self.dtype),
-                a=a.astype(self.dtype),
+                a=adjacency_matrix.astype(self.dtype),
                 y=y.astype(self.dtype),
             )
         ]
@@ -150,13 +162,19 @@ class Citation(Dataset):
 
         os.makedirs(self.path, exist_ok=True)
 
-        for n in self.suffixes:
-            f_name = f"ind.{self.name}.{n}"
-            req = requests.get(self.url.format(f_name))
+        for n in self.citation_suffixes:
+            f_name = f"{settings.datasets.dataset_prefix_index}{self.name}.{n}"
+            try:
+                req = requests.get(self.citation_url.format(f_name))
+            except Exception as ex:
+                logger.error(f"Dataset server error: {ex}")
+                raise ex
+
             if req.status_code == 404:
                 raise ValueError(
-                    f"Unable to load dataset {self.url.format(f_name)} (Server status is 404)."
+                    f"Unable to load dataset {self.citation_url.format(f_name)} (Seems that server status is 404)."
                 )
+
             with open(os.path.join(self.path, f_name), "wb") as out_file:
                 out_file.write(req.content)
 
@@ -164,6 +182,9 @@ class Citation(Dataset):
 
     @staticmethod
     def available_datasets():
+        """
+        Get available datasets.
+        """
         return settings.datasets.available_datasets
 
 

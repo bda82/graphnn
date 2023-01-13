@@ -5,7 +5,7 @@ import numpy as np
 from scipy import sparse as sp
 
 
-def degree_power(A, k) -> Any:
+def calculate_degree_power(A, k) -> Any:
     """
     Calculates the value of `A` in power of `k` from the given adjacency matrix.
     It can be used to calculate the normalized Laplacian.
@@ -24,9 +24,11 @@ def degree_power(A, k) -> Any:
 
     degrees[np.isinf(degrees)] = 0.0
 
-    if sp.issparse(A):
-        D = sp.diags(degrees)
-    else:
-        D = np.diag(degrees)
+    issparse_predicate = sp.issparse(A)
 
-    return D
+    if issparse_predicate:
+        diags = sp.diags(degrees)
+    else:
+        diags = np.diag(degrees)
+
+    return diags

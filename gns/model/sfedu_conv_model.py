@@ -61,4 +61,4 @@ class SfeduModel(Model):
 
 
 def sfedu_model_fabric(data, **kwargs):
-    return SfeduModel(data, **kwargs)
+    return SfeduModel(data, **kwargs)  # noqa

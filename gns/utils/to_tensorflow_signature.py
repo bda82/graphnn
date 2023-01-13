@@ -1,4 +1,4 @@
-def to_tf_signature(signature):
+def to_tensorflow_signature(signature):
     """
     Converts a dataset signature to a TensorFlow signature.
 

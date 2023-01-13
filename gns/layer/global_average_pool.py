@@ -19,8 +19,7 @@ class GlobalAveragePool(GlobalPoolLayer):
         Graph IDs of shape `(n_nodes, )` (only in disjoint mode)
 
     Output parameters:
-        Pooled node features of shape `(batch, n_node_features)`
-        (if single mode, shape will be `(1, n_node_features)`).
+        Pooled node features of shape `(batch, n_node_features)` if single mode, shape will be `(1, n_node_features)`.
     """
 
     def __init__(self, **kwargs):

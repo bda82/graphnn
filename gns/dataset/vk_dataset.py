@@ -9,6 +9,9 @@ import glob
 
 
 class VkDataset(Dataset):
+    """
+    Example for VKontakte dataset.
+    """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 

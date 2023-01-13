@@ -3,7 +3,7 @@ from typing import Any, Generator
 import numpy as np
 
 from gns.utils.batch_generator import batch_generator
-from gns.utils.to_tf_signature import to_tf_signature
+from gns.utils.to_tensorflow_signature import to_tensorflow_signature
 
 
 class GenericLoader:
@@ -145,7 +145,7 @@ class GenericLoader:
 
         """
         signature = self.dataset.signature
-        return to_tf_signature(signature)
+        return to_tensorflow_signature(signature)
 
     def pack(self, batch) -> dict:
         """
