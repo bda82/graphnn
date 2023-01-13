@@ -31,7 +31,7 @@
 - `e`: для представления атрибутов ребер графа,
 - `y`: для представления узлов или меток графа.
 
-Дополнительно реализован алгоритм нахождения кратчайшего расстояния Беллмана-Форда, представленный соответствующим исходным [классом](./gns/bellman_ford/bellman_ford_original.py ) и [измененным алгоритмом](./gns/bellman_ford/bellman_ford_modified.py ).
+Дополнительно реализован алгоритм нахождения кратчайшего расстояния Беллмана-Форда, представленный соответствующим [классом](./gns/bellman_ford/bellman_ford_original.py ) и [измененным алгоритмом](./gns/bellman_ford/bellman_ford_modified.py ).
 
 ### Слои нейронной сети (layers)
 
@@ -80,17 +80,17 @@
 - [degree_power](./gns/utils/degree_power.py): Вычисляет отклонение.
 - [deserialize_kwarg](./gns/utils/deserialize_kwarg.py): Десериализация аргументов.
 - [deserialize_scatter](./gns/utils/deserialize_scatter.py): Десериализация рассеяния (`scatter`)
-- [dot](./gns/utils/dot_production.py): Вычисляет умножение `a @ b` для `a` и `b` одного ранга (оба 2-го или оба 3-го ранга).
+- [dot_production](./gns/utils/dot_production.py): Вычисляет умножение `a @ b` для `a` и `b` одного ранга (оба 2-го или оба 3-го ранга).
 - [gcn_filter](./gns/utils/gcn_filter.py): Фильтры для графа.
 - [get_spec](./gns/utils/get_spec.py): Возвращает спецификацию (описание или метаданные) для тензора типа `tensorflow.Tensor`.
 - [idx_to_mask](./gns/utils/idx_to_mask.py): Возвращает маску по индексам.
-- [load_binary](./gns/utils/load_binary_file.py): Загружает значение из файла, сериализованного модулем pickle.
+- [load_binary_file](./gns/utils/load_binary_file.py): Загружает значение из файла, сериализованного модулем pickle.
 - [mask_to_float_weights](./gns/utils/mask_to_float_weights.py): Преобразует битовую маску в простые веса для вычисления средних потерь по узлам сети.
 - [mask_to_simple_weights](./gns/utils/mask_to_simple_weights.py): Преобразует битовую маску в простые веса для вычисления средних потерь по узлам сети.
-- [mixed_mode_dot](./gns/utils/dot_production_in_mixed_mode.py): Вычисляет эквивалент функции `tf.einsum('ij, bjk->bik', a, b)`.
-- [modal_dot](./gns/utils/dot_production_modal.py): Вычисляет матричное умножение для `a` и `b`.
-- [normalized_adjacency](./gns/utils/normalized_adjacency_matrix.py): Нормализует заданную матрицу смежности.
-- [normalized_laplacian лапласиан](./gns/utils/normalized_laplacian.py): Вычисляет нормализованный лапласиан заданной матрицы смежности.
+- [dot_production_in_mixed_mode](./gns/utils/dot_production_in_mixed_mode.py): Вычисляет эквивалент функции `tf.einsum('ij, bjk->bik', a, b)`.
+- [dot_production_modal](./gns/utils/dot_production_modal.py): Вычисляет матричное умножение для `a` и `b`.
+- [normalized_adjacency_matrix](./gns/utils/normalized_adjacency_matrix.py): Нормализует заданную матрицу смежности.
+- [normalized_laplacian](./gns/utils/normalized_laplacian.py): Вычисляет нормализованный лапласиан заданной матрицы смежности.
 - [preprocess_features](./gns/utils/preprocess_features.py): Вычислительные возможности.
 - [read_file](./gns/utils/read_file.py): Чтение файла с данными.
 - [rescale_laplacian лапласиан](./gns/utils/rescale_laplacian.py): Масштабирует собственные значения Лапласа до `[-1,1]`.
@@ -98,10 +98,10 @@
 - [serialize_kwarg](./gns/utils/serialize_kwarg.py): Сериализация атрибутов.
 - [serialize_scatter](./gns/utils/serialize_scatter.py): Сериализация разброса.
 - [shuffle_inplace](./gns/utils/shuffle_inplace.py): Перемешивание `np.random.shuffle`.
-- [sp_matrices_to_sp_tensors](./gns/utils/sparse_matrices_to_sparse_tensors.py): Преобразование разреженных матриц Scipy в тензор.
-- [sp_matrix_to_sp_tensor](./gns/utils/sparse_matrix_to_sparse_tensor.py): Преобразует разреженную матрицу Scipy в разреженный тензор.
-- [to_disjoint](./gns/utils/convert_node_objects_to_disjoint.py): Преобразует списки узловых объектов, матриц смежности и граничных объектов в непересекающийся режим.
-- [to_tf_signature](./gns/utils/to_tensorflow_signature.py): Преобразует сигнатуру набора данных в сигнатуру тензорного потока.
+- [sparse_matrices_to_sparse_tensors](./gns/utils/sparse_matrices_to_sparse_tensors.py): Преобразование разреженных матриц Scipy в тензор.
+- [sparse_matrix_to_sparse_tensor](./gns/utils/sparse_matrix_to_sparse_tensor.py): Преобразует разреженную матрицу Scipy в разреженный тензор.
+- [convert_node_objects_to_disjoint](./gns/utils/convert_node_objects_to_disjoint.py): Преобразует списки узловых объектов, матриц смежности и граничных объектов в непересекающийся режим.
+- [to_tensorflow_signature](./gns/utils/to_tensorflow_signature.py): Преобразует сигнатуру набора данных в сигнатуру тензорного потока.
 - [transpose](./gns/utils/transpose.py): Переносит параметр `a`, автоматически справляясь с разреженностью с помощью перегруженных функций тензорного потока.
 
 ### Конфигурация, параметры и настройки
