@@ -239,4 +239,4 @@ Examples are provided in the directory [examples](./examples):
 - [Test case](./examples/example_citation_cheb.py) for the `Cora` dataset for the Chebyshev Convolutional layer (analysis of the citation graph of social network messages).
 - [Simple Test Case](./examples/example_simple_citation.py) for the Cora dataset (analysis of the citation graph of social network messages).
 - Examples of finding the shortest distance on a graph for the [Bellman-Ford](./gns/examples/example_bellman_ford_original.py) algorithm and [modified Bellman-Ford](./gns/examples/example_bellman_ford_modified.py) algorithm.
-- Industry example for [vacancy search](./examples/example_industry_find_vacancy.py).
+- Industry example for [vacancy search](./examples/example_industry_gsn_model_training.py).

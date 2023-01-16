@@ -231,4 +231,4 @@ python main.py <vk_nickname_or_id>
 - [Тестовый пример](./examples/example_citation_cheb.py ) для набора данных `Cora` для сверточного слоя Чебышева (анализ граф цитирования сообщений социальной сети).
 - [Простой тестовый пример](./примеры/example_simple_citation.py) для набора данных Cora (анализ графа цитирования сообщений в социальных сетях).
 - Примеры нахождения кратчайшего расстояния на графе для алгоритма [Беллмана-Форда](./examples/example_bellman_ford_original.py) и [модифицированного алгоритма Беллмана-Форда](./examples/example_bellman_ford_modified.py).
-- Индустриальный пример [подбора вакансий персонала для производства](./examples/example_industry_find_vacancy.py)
+- Индустриальный пример [подбора вакансий персонала для производства](./examples/example_industry_gsn_model_training.py)
