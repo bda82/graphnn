@@ -21,7 +21,7 @@ class SfeduModel(Model):
     def __init__(self, data):
         super().__init__()
 
-        logger.info("Mound data...")
+        logger.info("Mount data...")
 
         self.data = data
 
