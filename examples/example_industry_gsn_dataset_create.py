@@ -1,6 +1,6 @@
 import logging
 
-from gns.dataset.arango_dataset import ArangoDataset
+from gns.dataset.sfedu_dataset import sfedu_dataset_fabric
 
 logger = logging.getLogger(__name__)
 
@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 logger.info("Init dataset object...")
 
-ds = ArangoDataset(a=1)
+ds = sfedu_dataset_fabric(n_samples=100)
 
 # Download dataset
 
