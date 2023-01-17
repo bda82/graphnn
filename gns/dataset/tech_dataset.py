@@ -1,17 +1,12 @@
 import os
-import glob
 import logging
 import numpy as np
 import scipy.sparse as sp
 import json
 import requests
 from pathlib import Path
-from types import SimpleNamespace
 from gns.graph.graph import Graph
 from gns.dataset.dataset import Dataset
-from gns.transformation.normalized_adjacency import NormalizeAdjacencyMatrix
-from gns.utils.read_file import read_file
-from gns.utils.load_binary_file import load_binary_file
 from gns.utils.idx_to_mask import get_mask_by_indexes
 from gns.utils.preprocess_features import preprocess_features
 from gns.dataset.dataset_folder import DATASET_FOLDER
