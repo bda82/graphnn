@@ -9,7 +9,9 @@ from keras.optimizers import Adam
 from gns.dataset.sfedu_dataset import sfedu_dataset_fabric
 from gns.model.sfedu_conv_model import sfedu_model_fabric
 from gns.loaders.disjoint_loader import DisjointLoader
+from gns.transformation.normalized_adjacency import NormalizeAdjacencyMatrix
 
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 logger.info(
@@ -17,32 +19,26 @@ logger.info(
 )
 
 # Config
-
 logger.info("Let's define the test parameters...")
 
 # Learning rate
-
 learning_rate = 1e-2
 
 # Number of training epochs
 epochs = 400
 
 # Patience for early stopping
-
 es_patience = 10
 
 # Batch size
-
 batch_size = 32
 
 # Generate Dataset and slice it to few batches
-
 logger.info("Load dataset...")
 
-data = sfedu_dataset_fabric(1000, n_labels=1000)
+data = sfedu_dataset_fabric(n_samples=10000, transforms=NormalizeAdjacencyMatrix())
 
 # Train/valid/test split
-
 logger.info("Create Train/valid/test data collections...")
 
 idxs = np.random.permutation(len(data))
@@ -53,7 +49,6 @@ data_va = data[idx_va]
 data_te = data[idx_te]
 
 # Data loaders
-
 logger.info("Define loaders...")
 
 loader_tr = DisjointLoader(data_tr, batch_size=batch_size, epochs=epochs)
@@ -61,16 +56,13 @@ loader_va = DisjointLoader(data_va, batch_size=batch_size)
 loader_te = DisjointLoader(data_te, batch_size=batch_size)
 
 # Build model
-
 logger.info("Build model...")
 
 model = sfedu_model_fabric(data=data)
 optimizer = Adam(learning_rate=learning_rate)
 loss_fn = CategoricalCrossentropy()
 
-
 # Fit model
-
 logger.info("Fit model...")
 
 
@@ -112,7 +104,6 @@ def evaluate(loader):
 
 
 # Load training model
-
 logger.info("Load training model...")
 
 epoch = step = 0
@@ -120,7 +111,6 @@ best_val_loss = np.inf
 best_weights = None
 patience = es_patience
 results = []
-
 
 for batch in loader_tr:
     step += 1
@@ -131,7 +121,6 @@ for batch in loader_tr:
         epoch += 1
 
         # Compute validation loss and accuracy
-        
         logger.info("Compute validation loss and accuracy...")
 
         val_loss, val_acc = evaluate(loader_va)
@@ -142,9 +131,7 @@ for batch in loader_tr:
         )
 
         # Check if loss improved for early stopping
-        
         logger.info("Check if loss improved for early stopping...")
-        
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             patience = es_patience
@@ -158,11 +145,12 @@ for batch in loader_tr:
         results = []
 
 # Evaluate model
-
 logger.info("Evaluate model...")
 
-model.set_weights(best_weights)  # Load best model
+# Load best model
+model.set_weights(best_weights)
 test_loss, test_acc = evaluate(loader_te)
 
 logger.info("Completed...")
 logger.info("Done. Test loss: {:.4f}. Test acc: {:.2f}".format(test_loss, test_acc))
+print("Done. Test loss: {:.4f}. Test acc: {:.2f}".format(test_loss, test_acc))
