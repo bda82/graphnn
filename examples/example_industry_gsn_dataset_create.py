@@ -1,14 +1,17 @@
 import logging
 
-from gns.dataset.sfedu_dataset import sfedu_dataset_fabric
+# from gns.dataset.tech_dataset import tech_dataset_fabric
+from gns.dataset.arango_tech_dataset import arango_tech_dataset_fabric
 
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 # Init dataset object
 
 logger.info("Init dataset object...")
 
-ds = sfedu_dataset_fabric(n_samples=100)
+# ds = tech_dataset_fabric()
+ds = arango_tech_dataset_fabric()
 
 # Download dataset
 
