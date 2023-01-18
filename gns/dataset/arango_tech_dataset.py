@@ -12,7 +12,7 @@ from arango import ArangoClient
 logger = logging.getLogger(__name__)
 
 
-class ArangoSfeduDataset(Dataset):
+class ArangoTechDataset(Dataset):
     def __init__(self, dtype: np.core.single = np.float32, **kwargs):
         self.dtype = dtype
         super().__init__(**kwargs)
@@ -127,5 +127,5 @@ class ArangoSfeduDataset(Dataset):
         ]
 
 
-def arango_sfedu_dataset_fabric(dtype: np.core.single = np.float32, **kwargs):
-    return ArangoSfeduDataset(dtype=dtype, **kwargs)
+def arango_tech_dataset_fabric(dtype: np.core.single = np.float32, **kwargs):
+    return ArangoTechDataset(dtype=dtype, **kwargs)

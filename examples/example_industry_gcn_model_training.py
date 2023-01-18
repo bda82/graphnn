@@ -6,7 +6,8 @@ from tensorflow.keras.losses import CategoricalCrossentropy  # noqa
 from tensorflow.keras.optimizers import Adam  # noqa
 
 from gns.config.settings import settings_fabric
-from gns.dataset.tech_dataset import tech_dataset_fabric
+# from gns.dataset.tech_dataset import tech_dataset_fabric
+from gns.dataset.arango_tech_dataset import arango_tech_dataset_fabric
 from gns.layer.gcn_convolution import GCNConvolutionalGeneralLayer
 from gns.loaders.single_loader import single_loader_fabric
 from gns.model.gcn import graph_convolutional_network_model_fabric
@@ -15,6 +16,7 @@ from gns.utils.mask_to_float_weights import mask_to_float_weights
 
 settings = settings_fabric()
 
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 logger.info(
@@ -37,8 +39,11 @@ tf.random.set_seed(seed=seed)
 
 logger.info("Download dataset...")
 
-dataset = tech_dataset_fabric(
-    data,
+# dataset = tech_dataset_fabric(
+#     data,
+#     transforms=[layer_process_fabric(GCNConvolutionalGeneralLayer)],
+# )
+dataset = arango_tech_dataset_fabric(
     transforms=[layer_process_fabric(GCNConvolutionalGeneralLayer)],
 )
 
@@ -80,3 +85,8 @@ eval_results = model.evaluate(loader_te.load(), steps=loader_te.steps_per_epoch)
 
 logger.info("Completed...")
 logger.info("Loss: {}\n" "Test accuracy: {}".format(*eval_results))
+
+path = model.path() + '/' + 'example_industry_gcn_model'
+print(f"Saving model to {path}...")
+model.save(path)
+print(f"Done")

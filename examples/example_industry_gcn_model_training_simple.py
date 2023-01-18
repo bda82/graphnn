@@ -2,12 +2,12 @@ import tensorflow as tf
 from keras.losses import CategoricalCrossentropy
 from keras.optimizers import Adam
 
-from gns.dataset.tech_dataset import tech_dataset_fabric
+# from gns.dataset.tech_dataset import tech_dataset_fabric
+from gns.dataset.arango_tech_dataset import arango_tech_dataset_fabric
 from gns.layer.gcn_convolution import GCNConvolutionalGeneralLayer
 from gns.model.gcn import GraphConvolutionalNetworkModel
 from gns.transformation.layer_process import LayerPreprocess
 from gns.transformation.adj_to_sp_tensor import AdjToSpTensor
-from gns.loaders.single_loader import single_loader_fabric
 
 learning_rate = 1e-2  # Learning rate
 epochs = 200  # Number of epochs for training
@@ -16,8 +16,15 @@ seed = 0  # Make weight initialization reproducible
 tf.random.set_seed(seed=seed)
 
 # Load data
-dataset = tech_dataset_fabric(
-    name='jd_data2',
+# dataset = tech_dataset_fabric(
+#     name='jd_data2',
+#     normalize_x=True,
+#     transforms=[
+#         LayerPreprocess(GCNConvolutionalGeneralLayer),
+#         AdjToSpTensor()
+#     ]
+# )
+dataset = arango_tech_dataset_fabric(
     normalize_x=True,
     transforms=[
         LayerPreprocess(GCNConvolutionalGeneralLayer),
@@ -52,3 +59,8 @@ for epoch in range(1, epochs):
     print(f"epoch = {epoch} / {epochs}, loss = {loss}")
 
 print(f"Final loss = {loss}")
+
+path = model.path() + '/' + 'example_industry_gcn_model_simple'
+print(f"Saving model to {path}...")
+model.save(path)
+print(f"Done")
