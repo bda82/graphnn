@@ -99,9 +99,6 @@ class GraphConvolutionalNetworkModel(tf.keras.Model):
         x = self.dropout_layer_1(x)
         return self.convolutional_layer_1([x, a])  # noqa
 
-    def path(self):
-        return os.path.join(MODEL_FOLDER, self.__class__.__name__)
-
 def graph_convolutional_network_model_fabric(
     n_labels,
     channels=16,
@@ -122,3 +119,6 @@ def graph_convolutional_network_model_fabric(
         l2_reg,
         **kwargs,
     )
+
+def path():
+    return os.path.join(MODEL_FOLDER, 'GraphConvolutionalNetworkModel')

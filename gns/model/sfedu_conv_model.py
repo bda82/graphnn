@@ -60,8 +60,10 @@ class SfeduModel(Model):
 
         return output
 
-    def path(self):
-        return os.path.join(MODEL_FOLDER, self.__class__.__name__)
 
 def sfedu_model_fabric(data, **kwargs):
     return SfeduModel(data, **kwargs)  # noqa
+
+
+def path():
+    return os.path.join(MODEL_FOLDER, 'SfeduModel')
