@@ -10,7 +10,8 @@ from gns.config.settings import settings_fabric
 from gns.dataset.arango_tech_dataset import arango_tech_dataset_fabric
 from gns.layer.gcn_convolution import GCNConvolutionalGeneralLayer
 from gns.loaders.single_loader import single_loader_fabric
-from gns.model.gcn import graph_convolutional_network_model_fabric
+from gns.model.gcn import GraphConvolutionalNetworkModel
+from gns.model.gcn import path
 from gns.transformation.layer_process import layer_process_fabric
 from gns.utils.mask_to_float_weights import mask_to_float_weights
 
@@ -56,7 +57,7 @@ weights_tr, weights_va, weights_te = (
 
 logger.info("Define model...")
 
-model = graph_convolutional_network_model_fabric(n_labels=dataset.n_labels)
+model = GraphConvolutionalNetworkModel(n_labels=dataset.n_labels)
 model.compile(
     optimizer=Adam(learning_rate),
     loss=CategoricalCrossentropy(reduction=settings.aggregation_methods.sum),
@@ -86,7 +87,7 @@ eval_results = model.evaluate(loader_te.load(), steps=loader_te.steps_per_epoch)
 logger.info("Completed...")
 logger.info("Loss: {}\n" "Test accuracy: {}".format(*eval_results))
 
-path = model.path() + '/' + 'example_industry_gcn_model'
-print(f"Saving model to {path}...")
-model.save(path)
+filepath = path() + '/example_industry_gcn_model'
+print(f"Saving model to {filepath}...")
+model.save(filepath)
 print(f"Done")

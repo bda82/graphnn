@@ -6,6 +6,7 @@ from keras.optimizers import Adam
 from gns.dataset.arango_tech_dataset import arango_tech_dataset_fabric
 from gns.layer.gcn_convolution import GCNConvolutionalGeneralLayer
 from gns.model.gcn import GraphConvolutionalNetworkModel
+from gns.model.gcn import path
 from gns.transformation.layer_process import LayerPreprocess
 from gns.transformation.adj_to_sp_tensor import AdjToSpTensor
 
@@ -60,7 +61,7 @@ for epoch in range(1, epochs):
 
 print(f"Final loss = {loss}")
 
-path = model.path() + '/' + 'example_industry_gcn_model_simple'
-print(f"Saving model to {path}...")
-model.save(path)
+filepath = path() + '/example_industry_gcn_model_simple/model'
+print(f"Saving model to {filepath}...")
+model.save_weights(filepath)
 print(f"Done")
