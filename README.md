@@ -239,4 +239,26 @@ Examples are provided in the directory [examples](./examples):
 - [Test case](./examples/example_citation_cheb.py) for the `Cora` dataset for the Chebyshev Convolutional layer (analysis of the citation graph of social network messages).
 - [Simple Test Case](./examples/example_simple_citation.py) for the Cora dataset (analysis of the citation graph of social network messages).
 - Examples of finding the shortest distance on a graph for the [Bellman-Ford](./gns/examples/example_bellman_ford_original.py) algorithm and [modified Bellman-Ford](./gns/examples/example_bellman_ford_modified.py) algorithm.
-- Industry example for [vacancy search](./examples/example_industry_gsn_model_training.py).
+- Industry example for [vacancy search](./examples/example_industry_gsn_model_training.py) - training a model based on data obtained using the SfeduDataset class, the model is a GraphSAGE solution, its tasks include searching for a similar graph describing a vacancy to a graph describing a user.
+- Industry example for [generate a large graph compatible with the GNS library using the TechDataset class](./gns/examples/example_industry_gcn_dataset_create.py) - this example demonstrates a way to generate a large graph compatible with the GNS library using the TechDataset class, as a result of the script, two files are created containing 249 (full - jd_data) and 177 (compressed - jd_data2) vertices (depending on the source data set). The data is taken from the source https://github.com/ZhongTr0n/JD_Analysis.
+- Industry example [for training a model using data obtained using the TechDataset class](./gns/examples/example_industry_gcn_model_training_simple.py) - an example of training a model using data obtained using the TechDataset class. The model is a standard Graph Convolutional Network, its tasks include searching for possible connections between nodes describing the user's graph: career trajectory.
+- industry example [of training the Graph Convolutional Network model with sophisticated verification logic and using advanced methods of using the standard GNS library tools](./gns/examples/example_industry_gcn_model_training.py) - the example also demonstrates the procedure for loading a dataset, its application at the model level, then training takes place, after which the accuracy of the resulting model is displayed. The main task of the model is to search for possible connections between nodes describing the user graph: career trajectory.
+- Industry example [to generate a series of small graphs](./gns/examples/example_industry_gsn_dataset_create.py) - this example demonstrates a way to generate a series of small graphs compatible with the GNS library using the SfeduDataset class, graphs describing users and vacancies are selected from it, after which the data is converted into the required format.
+
+To visualize the examples, the data is loaded into ArangoDB, for this [docker-compose file](./docker-compose.yml) with [partition mount](./arangodb_data).
+
+Visualization of the full graph of technologies.
+
+![full technology graph in ArangoDB](./docs/images/map.png)
+
+Visualization of the competence graph of a PHP developer.
+
+![PHP developer competence graph](./docs/images/user1-php-backend.png)
+
+Visualization of the devops developer competence graph.
+
+![devops developer competence graph](./docs/images/user2-dba-devops.png)
+
+Visualization of the competence graph of a JS developer.
+
+![JS developer competence graph](./docs/images/user3-js-fullstack.png)

@@ -11,4 +11,4 @@ logs/
 .DS_Store
 gns.egg-info/
 .env
-arangodb_data/
+# arangodb_data/
