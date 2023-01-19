@@ -21,7 +21,7 @@ setup(
         "isort",
         "tqdm",
     ],
-    url="https://github.com/bda82/graph-nn",
+    url="https://gitlab.actcognitive.org/itmo-sai-code/graph-nn",
     license="GPL",
     author="SFU",
     author_email="dabespalov@sfedu.ru",
