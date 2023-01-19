@@ -99,3 +99,4 @@ vk==3.0
 watchdog==2.2.0
 Werkzeug==2.2.2
 wrapt==1.14.1
+python-arango==7.5.5

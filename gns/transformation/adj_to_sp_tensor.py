@@ -1,4 +1,4 @@
-from spektral.utils.sparse import sp_matrix_to_sp_tensor
+from gns.utils.sparse_matrix_to_sparse_tensor import sparse_matrix_to_sparse_tensor
 
 
 class AdjToSpTensor:
@@ -8,6 +8,6 @@ class AdjToSpTensor:
 
     def __call__(self, graph):
         if graph.a is not None:
-            graph.a = sp_matrix_to_sp_tensor(graph.a)
+            graph.a = sparse_matrix_to_sparse_tensor(graph.a)
 
         return graph
