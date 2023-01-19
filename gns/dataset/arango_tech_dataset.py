@@ -37,11 +37,13 @@ class ArangoTechDataset(Dataset):
         nodes_collection = db.collection('nodes')
         nodes = nodes_collection.all()
         nodes = np.fromiter(nodes, dtype=np.dtype(dict))
+        nodes = sorted(nodes, key=lambda x: int(x['_key']))
 
         # Get list of edges
         edges_collection = db.collection('edges')
         edges = edges_collection.all()
         edges = np.fromiter(edges, dtype=np.dtype(dict))
+        edges = sorted(edges, key=lambda x: int(x['_key']))
 
         # Some initial values
         n_features = 1
