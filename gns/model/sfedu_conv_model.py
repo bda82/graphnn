@@ -1,3 +1,4 @@
+import os
 import logging
 
 from tensorflow.keras.layers import Dense  # noqa
@@ -5,7 +6,7 @@ from tensorflow.keras.models import Model  # noqa
 
 from gns.layer.global_average_pool import global_average_pool_layer_fabric
 from gns.layer.gcs_convolution import gsn_convolutional_general_layer_fabric
-
+from gns.model.model_folder import MODEL_FOLDER
 from gns.config.settings import settings_fabric
 
 settings = settings_fabric()
@@ -21,7 +22,7 @@ class SfeduModel(Model):
     def __init__(self, data):
         super().__init__()
 
-        logger.info("Mound data...")
+        logger.info("Mount data...")
 
         self.data = data
 
@@ -62,3 +63,7 @@ class SfeduModel(Model):
 
 def sfedu_model_fabric(data, **kwargs):
     return SfeduModel(data, **kwargs)  # noqa
+
+
+def path():
+    return os.path.join(MODEL_FOLDER, 'SfeduModel')

@@ -1,20 +1,19 @@
 import os
+import glob
 import numpy as np
 from gns.graph.graph import Graph
 from gns.dataset.dataset import Dataset
+from gns.dataset.dataset_folder import DATASET_FOLDER
 from arango import ArangoClient
-import glob
-import scipy.sparse as sp
 
 
 class ArangoDataset(Dataset):
-    def __init__(self, mode="u4v", **kwargs):
-        self.mode = type
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
     @property
     def path(self):
-        return os.path.dirname(__file__) + '/ArangoDataset'
+        return os.path.join(DATASET_FOLDER, self.__class__.__name__)
 
     def download(self):
 

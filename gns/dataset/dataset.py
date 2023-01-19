@@ -196,42 +196,24 @@ class Dataset:
             return dataset
 
     def __setitem__(self, key, value):
-        is_value_in_available_types_predicate = isinstance(value, (Graph, list, tuple))
-        is_key_in_available_types_predicate = isinstance(key, (slice, list, tuple))
-        is_key_is_int_predicate = isinstance(key, int)
-        is_key_is_slice_predicate = isinstance(key, slice)
-        is_key_has_available_type_predicate = isinstance(key, (int, slice, list, tuple))
-        is_iterable_predicate = isinstance(value, (list, tuple))
-        is_all_instances_are_graph_predicate = all([isinstance(v, Graph) for v in value])
-
-        if not is_value_in_available_types_predicate:
+        is_iterable = isinstance(value, (list, tuple))
+        if not isinstance(value, (Graph, list, tuple)):
             raise ValueError(
-                "Only graphs or sequences of graphs can be assigned to datasets"
+                "Datasets can only be assigned Graphs or " "sequences of Graphs"
             )
+        if is_iterable and not all([isinstance(v, Graph) for v in value]):
+            raise ValueError("Assigned sequence must contain only Graphs")
+        if is_iterable and isinstance(key, int):
+            raise ValueError("Cannot assign multiple Graphs to one location")
+        if not is_iterable and isinstance(key, (slice, list, tuple)):
+            raise ValueError("Cannot assign one Graph to multiple locations")
+        if not (isinstance(key, (int, slice, list, tuple))):
+            raise ValueError("Unsupported key type: {}".format(type(key)))
 
-        if is_iterable_predicate and not is_all_instances_are_graph_predicate:
-            raise ValueError(
-                "The assigned sequence must contain only graphs"
-            )
-
-        if is_iterable_predicate and is_key_is_int_predicate:
-            raise ValueError(
-                "It is not possible to assign multiple graphs to the same key"
-            )
-
-        if not is_iterable_predicate and is_key_in_available_types_predicate:
-            raise ValueError(
-                "It is not possible to assign one graph to multiple keys"
-            )
-        if not is_key_has_available_type_predicate:
-            raise ValueError(
-                f"Unsupported key type {type(key)}"
-            )
-
-        if is_key_is_int_predicate:
+        if isinstance(key, int):
             self.graphs[key] = value
         else:
-            if is_key_is_slice_predicate:
+            if isinstance(key, slice):
                 self.graphs[key] = value
             else:
                 for i, k in enumerate(key):

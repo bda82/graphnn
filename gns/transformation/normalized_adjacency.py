@@ -16,4 +16,4 @@ class NormalizeAdjacencyMatrix:
         if graph.a is not None:
             graph.a = normalized_adjacency_matrix(graph.a, self.symmetric)
 
-        return
+        return graph

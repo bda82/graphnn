@@ -1,8 +1,10 @@
+import os
 import tensorflow as tf
 
 from gns.config.settings import settings_fabric
 from gns.layer.gcn_convolution import GCNConvolutionalGeneralLayer, gcn_convolutional_general_layer_fabric
 from gns.layer.keras_dropout import keras_dropout_fabric
+from gns.model.model_folder import MODEL_FOLDER
 
 settings = settings_fabric()
 
@@ -97,7 +99,6 @@ class GraphConvolutionalNetworkModel(tf.keras.Model):
         x = self.dropout_layer_1(x)
         return self.convolutional_layer_1([x, a])  # noqa
 
-
 def graph_convolutional_network_model_fabric(
     n_labels,
     channels=16,
@@ -118,3 +119,6 @@ def graph_convolutional_network_model_fabric(
         l2_reg,
         **kwargs,
     )
+
+def path():
+    return os.path.join(MODEL_FOLDER, 'GraphConvolutionalNetworkModel')
