@@ -1,264 +1,260 @@
-# Library for graph neural networks [graph-nn]
+# Библиотека для графовых нейронных сетей [graph-nn]
 
-## Short description
+## Краткое описание
 
-This library contains tools for working with graph neural networks, as well as auxiliary modules and algorithms that together allow you to create, train and use models, layers and datasets that work with data in a graph representation.
+Эта библиотека содержит инструменты для работы с графовыми нейронными сетями, а также вспомогательные модули и алгоритмы, которые, в совокупности, позволяют создавать, обучать и использовать модели, слои и наборы данных, работающие с данными в графовом представлении.
 
-The library is under active development with the ultimate goal of solving predictive analytics tasks in the field of social network analysis and building career paths for university students and graduates, as well as for companies interested in developing their employees and recruiting staff.
+Библиотека находится в стадии активного развития с конечной целью решения задач прогнозной аналитики в области анализа социальных сетей и построения карьерных траекторий для студентов и выпускников университетов, а также для компаний, заинтересованных в развитии своих сотрудников и подборе персонала.
 
-To do this, already at the current stage of development, in addition to the basic models of graph neural networks, examples and tools for creating inherited solutions, the library includes a link parser of the VKontakte social network and HeadHunter labor exchange, as well as algorithms for finding the shortest path in a weighted graph with different types of connections and vertices.
+Для этого уже на текущем этапе разработки, помимо базовых моделей графовых нейронных сетей, примеров и инструментов для создания унаследованных решений, в библиотеку включен анализатор связей социальной сети "ВКонтакте" и биржи труда HeadHunter, а также алгоритмы поиска кратчайшего пути во взвешенном графе с различными типами соединений и вершин.
 
-All this together gives researchers and developers the basis for creating their own solutions in the field of graph neural networks for solving complex social and technical problems.
+Все это вместе взятое дает исследователям и разработчикам основу для создания собственных решений в области графовых нейронных сетей для решения сложных социальных и технических проблем.
 
-## Repository composition
+## Композиция репозитория
 
-### Datasets
+### Наборы данных (datasets)
 
-The library contains definitions for working with [datasets](./gns/dataset) created according to the principles of inheritance from the base class.
-The base class of the dataset is set in the [corresponding part of the dataset module](./gns/dataset/dataset.py).
-The library also defines private implementations of datasets (social networks) for the development of examples and tests (in particular, [Cora dataset](./gns/dataset/cora.py ) for examples with the analysis of citations of social media messages), and also an example of a dataset for industrial application in terms of job search [SfeduDataset](./gns/dataset/sfedu_dataset.py ) and a special dataset for loading data from the graph database [ArangoDataset](./gns/dataset/arango_dataset.py ).
+Библиотека содержит определения для работы с [datasets](./gns/dataset), созданными в соответствии с принципами наследования от базового класса.
+Базовый класс набора данных задается в [соответствующей части модуля набора данных](./gns/dataset/dataset.py).
+Библиотека также определяет частные реализации наборов данных (социальные сети) для разработки примеров и тестов (в частности, [Cora dataset](./gns/dataset/cora.py) для примеров с анализом цитирования сообщений в социальных сетях), а также пример датасета для индустриального применения в плане поиска вакансий [SfeduDataset](./gns/dataset/sfedu_dataset.py) и специальный датасет для загрузки данных из графовой базы данных [ArangoDataset](./gns/dataset/arango_dataset.py).
 
-### Loaders
+### Загрузчики (loaders)
 
-To download datasets from the server, it was decided to implement a special [Loader](./gns/loaders/single_loader.py) and define the [single data upload](./gns/loaders/single_loader.py) mode for other implemented elements of a graph neural network and several examples. Additionally, appends the [BatchLoader](./gns/loaders/batch_loader.py) for butch data upload and [DisjointLoader](./gns/loaders/disjoint_loader.py) for disjoint loading.
+Для загрузки наборов данных с сервера было решено реализовать специальный [SingleLoader](./gns/loaders/single_loader.py) для реализованных элементов графовой нейронной сети и несколько примеров. Кроме того, добавлен [BatchLoader](./gns/loaders/batch_loader.py) для пакетной загрузки данных (butch) и [DisjointLoader](./gns/loaders/disjoint_loader.py) для раздельной.
 
-### Graph
+### Граф (graph)
 
-The main work of a graph neural network is determined by the base class [Graph](./gns/graph/graph.py), which is a container for data.
-The container works with the following parameters:
-- `x`: to represent the features of nodes,
-- `a`: to represent the adjacency matrix,
-- `e`: to represent the attributes of the edges of the graph,
-- `y`: to represent the nodes or labels of the graph.
+Основная работа графовой нейронной сети определяется базовым классом [Graph](./gns/graph/graph.py), который является контейнером для данных.
+Контейнер работает со следующими параметрами:
+- `x`: для представления особенностей узлов,
+- `a`: для представления матрицы смежности,
+- `e`: для представления атрибутов ребер графа,
+- `y`: для представления узлов или меток графа.
 
-Additionally, an algorithm for finding the shortest Bellman-Ford distance is implemented, represented by the corresponding original [class](./gns/bellman_ford/bellman_ford_original.py) and [modified](./gns/bellman_ford/bellman_ford_modified.py).
+Дополнительно реализован алгоритм нахождения кратчайшего расстояния Беллмана-Форда, представленный соответствующим [классом](./gns/bellman_ford/bellman_ford_original.py ) и [измененным алгоритмом](./gns/bellman_ford/bellman_ford_modified.py ).
 
-### Neural network layers
+### Слои нейронной сети (layers)
 
-The following neural network layers were created for the main work of the library:
+Для основной работы библиотеки были созданы следующие слои нейронной сети:
 
-- Convolutional layer [Chebyshev](./gns/layer/cheb.py) for a graph neural network.
-- Main (base) class for [convolutional layer](./gns/layer/convolution.py) Graph neural network.
-- [Convolutional](./gns/layer/gcn_convolution.py ) a layer of a graph neural network.
-- [A special `GraphConv` layer](./gns/layer/gcs_convolution.py) with a trainable skip connection.
-- The main (base) layer class for [GlobalPool](./gns/layer/global_pool.py).
-- [Global Sum](./gns/layer/global_sum_pool.py ) is an implementation of the GlobalPoolLayer base class.
-- The main layer with the algorithm [GraphSAGE](./gns/layer/graphsage.py).
+- Сверточный слой [Чебышева](./gns/layer/cheb.py) для графовой нейронной сети.
+- Основной (базовый) класс для [сверточного слоя](./gns/layer/convolution.py) Графическая нейронная сеть.
+- [Сверточный](./gns/layer/gcn_convolution.py ) слой графовой нейронной сети.
+- [Специальный сверточный слой](./gns/layer/gcs_convolution.py) с пропусками во время обучения.
+- Основной (базовый) класс слоя для [GlobalPool](./gns/layer/global_pool.py).
+- [Глобальная сумма](./gns/layer/global_sum_pool.py ) является реализацией базового класса GlobalPoolLayer.
+- Основной слой с алгоритмом [GraphSAGE](./gns/layer/graphsage.py).
 
-### Sending messages
+### Отправка сообщений (message passing)
 
-To implement the algorithm for promoting information on a graph neural network, an algorithm was implemented via 
-[Base Class](./gns/message/generic_message_passing.py) for transmitting messages in a graph neural network (for the `GraphSage` algorithm).
+Для реализации алгоритма продвижения информации по графовой нейронной сети был реализован алгоритм с помощью 
+[Базового класса](./gns/message/generic_message_passing.py) для передачи сообщений в графовой нейронной сети (для алгоритма GraphSage).
 
-### Models
+### Модели (model)
 
-[The Main model](./gns/model/gcn.py) was also created convolutional neural network, complementing the Tensorflow/Karas model and special industry model [SfeduModel](./gns/model/sfedu_conv_model.py).
+[Основная модель](./gns/model/gcn.py) создана для сверточной нейронной сети, дополняя модель Tensorflow/Karas и специальная модель для индустриального примера [SfeduModel](./gns/model/sfedu_conv_model.py).
 
-### Dispersion models
+### Модели рассеяния (разреживания, scatter)
 
-For the basic message passing function `Generic Message Passing`, as well as a sub-library, scattering models were implemented:
-- [scatter_max](./gns/scatter/scatter_max.py): Reduces the number of messages.
-- [scatter_mean](./gns/scatter/scatter_mean.py): Averages messages.
-- [scatter_min](./gns/scatter/scatter_min.py): Reduces the number of messages.
-- [scatter_prod](./gns/scatter/scatter_prod.py): Multiplies messages.
-- [scatter_sum](./gns/scatter/scatter_sum.py): Summarizes the messages.
+Для базовой функции передачи сообщений `Generic Message Passing`, а также для вспомогательной библиотеки функций были реализованы модели рассеяния:
+- [scatter_max](./gns/scatter/scatter_max.py): Уменьшает количество сообщений.
+- [scatter_mean](./gns/scatter/scatter_mean.py): Усредняет сообщения.
+- [scatter_min](./gns/scatter/scatter_min.py): Уменьшает количество сообщений.
+- [scatter_prod](./gns/scatter/scatter_prod.py): Умножает сообщения.
+- [сумма рассеяния](./gns/scatter/scatter_sum.py): Суммирует сообщения.
 
-### Transformations
+### Предварительные преобразования (preprocess)
 
-Defined by the transformation base class [LayerPreprocess](./gns/transformation/layer_process.py) - Implements the preprocessing function in the convolutional layer for the adjacency matrix.
+Определяется базовым классом преобразования [LayerPreprocess](./gns/transformation/layer_process.py). Он реализует функцию предварительной обработки в сверточном слое для матрицы смежности.
 
-### Utilities
+### Библиотека вспомогательных функций
 
-The library has a sufficient number of utilities and auxiliary functions:
-- [add_self_loops](./gns/utils/add_self_loops.py): Adds loops to a given adjacency matrix.
-- [batch_generator](./gns/utils/batch_generator.py): Iterates over data with a given number of epochs, returns as a python generator one packet at a time.
-- [chebyshev_filter](./gns/utils/chebyshev_filter.py): Implementation of the Chebyshev filter for a given adjacency matrix.
-- [chebyshev_polynomial](./gns/utils/chebyshev_polynomial.py): Computes Chebyshev polynomials from X up to the order of k.
-- [check_dtypes](./gns/utils/check_dtypes.py): Checking the data set type.
-- [check_dtypes_decorator](./gns/utils/check_dtypes_decorator.py): Decorator for automatic type checking.
-- [collate_labels_disjoint](./gns/utils/collate_labels_disjoint.py): Matches this list of labels for disjoint mode.
-- [degree_power](./gns/utils/degree_power.py): Calculates the deviation
-- [deserialize_kwarg](./gns/utilsdeserialize_kwarg.py): Deserialization of arguments
-- [deserialize_scatter](./gns/utils/deserialize_scatter.py): Deserialization of scattering (`scatter`)
-- [dot_production](./gns/utils/dot_production.py): Calculates the multiplication of a @b for a and b of the same rank (both 2 or both 3 ranks).
-- [gcn_filter](./gns/utils/gcn_filter.py): Filters garf.
-- [get_spec](./gns/utils/get_spec.py): Returns a specification (description or metadata) for a tensorflow type tensor.Tensor.
-- [idx_to_mask](./gns/utils/idx_to_mask.py): Returns the mask by indexes.
-- [load_binary_file](./gns/utils/load_binary_file.py): Loads a value from a file serialized by the pickle module.
-- [mask_to_float_weights](./gns/utils/mask_to_float_weights.py): Converts the bit mask into simple weights to calculate the average losses across the network nodes.
-- [mask_to_simple_weights](./gns/utils/mask_to_simple_weights.py): Converts the bit mask into simple weights to calculate the average losses across the network nodes.
-- [dot_production_in_mixed_mode](./gns/utils/dot_production_in_mixed_mode.py): Calculates the equivalent of the `tf.einsum function('ij, bjk->bik', a, b)`.
-- [dot_production_modal](./gns/utils/dot_production_modal.py): Calculates matrix multiplication for a and b.
-- [normalized_adjacency_matrix](./gns/utils/normalized_adjacency_matrix.py): Normalizes a given adjacency matrix.
-- [normalized_laplacian](./gns/utils/normalized_laplacian.py): Computes the normalized Laplacian of a given adjacency matrix.
-- [preprocess_features](./gns/utils/preprocess_features.py): Computing features.
-- [read_file](./gns/utils/read_file.py): Reading the file.
-- [rescale_laplacian](./gns/utils/rescale_laplacian.py): Scales the Laplace eigenvalues to `[-1,1]`.
-- [reshape](./gns/utils/reshape.py): Changes the shape according to the shape, automatically coping with the rarefaction.
-- [serialize_kwarg](./gns/utils/serialize_kwarg.py): Serialization of attributes.
-- [serialize_scatter](./gns/utils/serialize_scatter.py): Serialization of the scatter.
-- [shuffle_inplace](./gns/utils/shuffle_inplace.py): Shuffle `np.random.shuffle`.
-- [sparse_matrices_to_sparse_tensors](./gns/utils/sparse_matrices_to_sparse_tensors.py): Transformation of Scipy sparse matrices into a tensor.
-- [sparse_matrix_to_sparse_tensor](./gns/utils/sparse_matrix_to_sparse_tensor.py): Converts a sparse Scipy matrix into a sparse tensor.
-- [convert_node_objects_to_disjoint](./gns/utils/convert_node_objects_to_disjoint.py): Converts lists of node objects, adjacency matrices, and boundary objects into disjoint mode.
-- [to_tensorflow_signature](./gns/utils/to_tensorflow_signature.py): Converts a dataset signature to a TensorFlow signature.
-- [transpose](./gns/utils/transpose.py): Transposes parameter `a`, automatically coping with sparsity using overloaded TensorFLow functions.
+Библиотека обладает достаточным количеством утилит и вспомогательных функций, необходимых для работы:
+- [add_self_loops](./gns/utils/add_self_loops.py): Добавляет циклы к заданной матрице смежности.
+- [batch_generator](./gns/utils/batch_generator.py): Перебирает данные с заданным количеством эпох, возвращает генератор python по одному пакету за раз.
+- [chebyshev_filter](./gns/utils/chebyshev_filter.py): Реализация фильтра Чебышева для заданной матрицы смежности.
+- [chebyshev_polynomial](./gns/utils/chebyshev_polynomial.py): Вычисляет полиномы Чебышева от X до порядка k.
+- [check_dtypes](./gns/utils/check_dtypes.py): Проверка типа набора данных.
+- [check_dtypes_decorator](./gns/utils/check_dtypes_decorator.py): Декоратор для автоматической проверки типа.
+- [collate_labels_disjoint](./gns/utils/collate_labels_disjoint.py): Определяет соответствие списка меток для непересекающегося (disjoint) режима.
+- [degree_power](./gns/utils/degree_power.py): Вычисляет отклонение.
+- [deserialize_kwarg](./gns/utils/deserialize_kwarg.py): Десериализация аргументов.
+- [deserialize_scatter](./gns/utils/deserialize_scatter.py): Десериализация рассеяния (`scatter`)
+- [dot_production](./gns/utils/dot_production.py): Вычисляет умножение `a @ b` для `a` и `b` одного ранга (оба 2-го или оба 3-го ранга).
+- [gcn_filter](./gns/utils/gcn_filter.py): Фильтры для графа.
+- [get_spec](./gns/utils/get_spec.py): Возвращает спецификацию (описание или метаданные) для тензора типа `tensorflow.Tensor`.
+- [idx_to_mask](./gns/utils/idx_to_mask.py): Возвращает маску по индексам.
+- [load_binary_file](./gns/utils/load_binary_file.py): Загружает значение из файла, сериализованного модулем pickle.
+- [mask_to_float_weights](./gns/utils/mask_to_float_weights.py): Преобразует битовую маску в простые веса для вычисления средних потерь по узлам сети.
+- [mask_to_simple_weights](./gns/utils/mask_to_simple_weights.py): Преобразует битовую маску в простые веса для вычисления средних потерь по узлам сети.
+- [dot_production_in_mixed_mode](./gns/utils/dot_production_in_mixed_mode.py): Вычисляет эквивалент функции `tf.einsum('ij, bjk->bik', a, b)`.
+- [dot_production_modal](./gns/utils/dot_production_modal.py): Вычисляет матричное умножение для `a` и `b`.
+- [normalized_adjacency_matrix](./gns/utils/normalized_adjacency_matrix.py): Нормализует заданную матрицу смежности.
+- [normalized_laplacian](./gns/utils/normalized_laplacian.py): Вычисляет нормализованный лапласиан заданной матрицы смежности.
+- [preprocess_features](./gns/utils/preprocess_features.py): Вычислительные возможности.
+- [read_file](./gns/utils/read_file.py): Чтение файла с данными.
+- [rescale_laplacian лапласиан](./gns/utils/rescale_laplacian.py): Масштабирует собственные значения Лапласа до `[-1,1]`.
+- [reshape](./gns/utils/reshape.py): Изменяет форму в соответствии с формой, автоматически справляясь с разрежением.
+- [serialize_kwarg](./gns/utils/serialize_kwarg.py): Сериализация атрибутов.
+- [serialize_scatter](./gns/utils/serialize_scatter.py): Сериализация разброса.
+- [shuffle_inplace](./gns/utils/shuffle_inplace.py): Перемешивание `np.random.shuffle`.
+- [sparse_matrices_to_sparse_tensors](./gns/utils/sparse_matrices_to_sparse_tensors.py): Преобразование разреженных матриц Scipy в тензор.
+- [sparse_matrix_to_sparse_tensor](./gns/utils/sparse_matrix_to_sparse_tensor.py): Преобразует разреженную матрицу Scipy в разреженный тензор.
+- [convert_node_objects_to_disjoint](./gns/utils/convert_node_objects_to_disjoint.py): Преобразует списки узловых объектов, матриц смежности и граничных объектов в непересекающийся режим.
+- [to_tensorflow_signature](./gns/utils/to_tensorflow_signature.py): Преобразует сигнатуру набора данных в сигнатуру тензорного потока.
+- [transpose](./gns/utils/transpose.py): Переносит параметр `a`, автоматически справляясь с разреженностью с помощью перегруженных функций тензорного потока.
 
-### Configuration, parameters and settings
-#### Library configuration sets a lot of files in the [config](./gns/config) directory.
+### Конфигурация, параметры и настройки
 
-The main composition (named parameters):
-- aggregation methods,
-- properties and attributes,
-- application constants,
-- data types,
-- datasets,
-- folders,
-- named functions,
-- initializers,
-- models,
-- names,
-- links.
+#### Конфигурация библиотеки устанавливает множество файлов в каталоге [config](./gns/config).
 
-#### How to use
+Основной состав (именованные параметры):
+- методы агрегирования,
+- свойства и атрибуты,
+- константы приложения,
+- типы данных,
+- наборы данных,
+- папки,
+- именованные функции,
+- инициализаторы,
+- модели,
+- имена,
+- ссылки.
 
-Can be used like this.
+#### Как использовать
 
-Set up envs
+Может быть использован следующим образом.
+
+Настройка envs
 
 ```sh
 cp .env.dist .env
 ```
 
-Create virtual environment
+Создать виртуальную среду
 ```sh
-virtualenv -p <path_to_python> venv
-source venv/bin/activate
+virtualenv -p <path_to_python>
+источник venv venv/bin/активировать
 ```
 
-Install packages
-```sh
+Установка пакетов
+
+установка 
+```sh 
 pip install -r requirements.txt
 ```
-or
-```sh
-make install
-```
 
-If you change some packages, you can freeze this with command
+Если вы измените некоторые пакеты, вы можете заморозить это с помощью команды
 ```sh
 pip freeze > requirements.txt
 ```
-or 
-```sh
-make freeze
-```
 
-### Additional tools
-### HH crawler
+### Дополнительные инструменты
 
-Defines Vacancies/Keywords DataSet generator from HH.ru.
+### Парсер HH
 
-Collection of simple scripts for crawling vacancies from HH.ru site
-via API for generating CSV file by fields data like: name,
-description and key skills.
+Определяет генератор набора данных вакансий /ключевых слов из HH.ru .
 
-It helps to generate CSV file with following format:
-```csv
-"$name1 & $description1","key skills1"
-"$name2 & $description2","key skills2"
-"$name3 & $description3","key skills3"
+Коллекция простых скриптов для обхода вакансий с сайта HH.ru через API для генерации CSV-файла по полям данных, 
+таким как: имя, описание и ключевые навыки.
+
+Это помогает сгенерировать CSV-файл в следующем формате:
+``csv
+"$name1 & $description1","ключевые навыки1"
+"$name2 & $description2","ключевые навыки2"
+"$name3 & $description3","ключевые навыки3"
 ...
 ```
 
-Scripts tested on python 3.10 but should work on previous versions too.
+Скрипты протестированы на python 3.10, но должны работать и на предыдущих версиях.
 
+#### Получение страниц
 
-#### Get pages
-
-Change `text` field in `download.py` to yours:
+Измените поле "текст" в `download.py` к твоему:
 
 ```py
-text = 'NAME:Data science'
+text = 'НАЗВАНИЕ:Наука о данных'
 ```
 
-Then run script
+Затем запустите скрипт
 
 ```sh
 cd ./gns/crawlers/hh
 python download.py
 ```
 
-This script will download save results from API to `./docs/pagination`
-folder in JSON format.
+Этот скрипт загрузит результаты сохранения из API в папку `./gns/crawlers/docs/pagination` в формате JSON.
 
-#### Get details about vacancies
+#### Получение подробной информации о вакансиях
 
-On the next step we need to download extended details about vacancies:
+На следующем шаге нам нужно загрузить расширенную информацию о вакансиях:
 
 ```sh
 python parse.py
 ```
 
-Script will call API and save responses to `./docs/vacancies` folder.
+Скрипт вызовет API и сохранит ответы в папку "./gns/crawlers/docs/vacancies".
 
-#### Generate CSV
+#### Сгенерировать CSV
 
 ```sh
 python generate.py
 ```
 
-Result will be saved to `./docs/csv` folder.
+Результат будет сохранен в папке `./gns/crawlers/docs/csv`.
 
-### VK API crawler
+### Поисковик API VK
 
-#### How to use
+#### Как использовать
 
-```shell
+```sh
 cd ./gns/crawlers/vk
 python main.py <vk_nickname_or_id>
 ```
 
 ### Makefile
 
-A Makefile is provided to automate some tasks. Available commands:
-- install: Installing packages.
-- freeze: Fixing packages.
-- clear: clearing the cache.
-- serve: package maintenance:
-  - landing,
-  - automatic formatting,
-  - sorting of imports,
-- typing check.
-- test: run tests.
+Для автоматизации некоторых задач предоставляется Makefile. Доступные команды:
+- install: установка пакетов.
+- freeze: фиксация установленных пакетов.
+- clear: очистка.
+- serve: управление библиотекой:
+  - автоматическое форматирование,
+  - автоматическая сортировка импортов,
+  - проверка типов.
+- test: запуск тестов.
 
-## Examples
+## Примеры
 
-Examples are provided in the directory [examples](./examples):
-- [Test example](./examples/example_citation_gcn.py) for the `Cora` dataset (analysis of the citation graph of social network messages).
-- [Test case](./examples/example_citation_cheb.py) for the `Cora` dataset for the Chebyshev Convolutional layer (analysis of the citation graph of social network messages).
-- [Simple Test Case](./examples/example_simple_citation.py) for the Cora dataset (analysis of the citation graph of social network messages).
-- Examples of finding the shortest distance on a graph for the [Bellman-Ford](./gns/examples/example_bellman_ford_original.py) algorithm and [modified Bellman-Ford](./gns/examples/example_bellman_ford_modified.py) algorithm.
-- Industry example for [vacancy search](./examples/example_industry_gsn_model_training.py) - training a model based on data obtained using the SfeduDataset class, the model is a GraphSAGE solution, its tasks include searching for a similar graph describing a vacancy to a graph describing a user.
-- Industry example for [generate a large graph compatible with the GNS library using the TechDataset class](./gns/examples/example_industry_gcn_dataset_create.py) - this example demonstrates a way to generate a large graph compatible with the GNS library using the TechDataset class, as a result of the script, two files are created containing 249 (full - jd_data) and 177 (compressed - jd_data2) vertices (depending on the source data set). The data is taken from the source https://github.com/ZhongTr0n/JD_Analysis.
-- Industry example [for training a model using data obtained using the TechDataset class](./gns/examples/example_industry_gcn_model_training_simple.py) - an example of training a model using data obtained using the TechDataset class. The model is a standard Graph Convolutional Network, its tasks include searching for possible connections between nodes describing the user's graph: career trajectory.
-- industry example [of training the Graph Convolutional Network model with sophisticated verification logic and using advanced methods of using the standard GNS library tools](./gns/examples/example_industry_gcn_model_training.py) - the example also demonstrates the procedure for loading a dataset, its application at the model level, then training takes place, after which the accuracy of the resulting model is displayed. The main task of the model is to search for possible connections between nodes describing the user graph: career trajectory.
-- Industry example [to generate a series of small graphs](./gns/examples/example_industry_gsn_dataset_create.py) - this example demonstrates a way to generate a series of small graphs compatible with the GNS library using the SfeduDataset class, graphs describing users and vacancies are selected from it, after which the data is converted into the required format.
+Примеры приведены в каталоге [examples](./examples):
+- [Тестовый пример](./examples/example_citation_gcn.py ) для набора данных `Cora` (анализ графf цитирования сообщений в социальных сетях).
+- [Тестовый пример](./examples/example_citation_cheb.py ) для набора данных `Cora` для сверточного слоя Чебышева (анализ граф цитирования сообщений социальной сети).
+- [Простой тестовый пример](./примеры/example_simple_citation.py) для набора данных Cora (анализ графа цитирования сообщений в социальных сетях).
+- Примеры нахождения кратчайшего расстояния на графе для алгоритма [Беллмана-Форда](./examples/example_bellman_ford_original.py) и [модифицированного алгоритма Беллмана-Форда](./examples/example_bellman_ford_modified.py).
+- Индустриальный пример [подбора вакансий персонала для производства](./examples/example_industry_gsn_model_training.py). Тренировка модели на базе данных полученных при помощи класса SfeduDataset, модель представляет из себя GraphSAGE решение, в её задачи входит поиск похожего графа описывающего вакансию на граф описывающий пользователя.
+- Индустриальный пример [генерации большого графа](./gns/examples/example_industry_gcn_dataset_create.py). Данный пример демонстрирует способ генерации большого графа совместимого с библиотекой GNS при помощи класса TechDataset, в результате работы скрипта создаётся два файла содержащие 249 (полный - jd_data) и 177 (сжатый - jd_data2) вершин (в зависимости от набора исходных данных). Данные берутся из источника https://github.com/ZhongTr0n/JD_Analysis
+- Индустриальный пример [тренировки модели для класса TechDataset](./gns/examples/example_industry_gcn_model_training_simple.py). Это пример тренировки модели с использованием данных полученных при помощи класса TechDataset. Модель представляет из себя стандартную Graph Convolutional Network, в её задачи входит поиск  возможных связей между узлами описывающими граф пользователя: карьерная траектория.
+- Индустриальный пример [ренировки модели Graph Convolutional Network](./gns/examples/example_industry_gcn_model_training.py). Пример тренировки модели Graph Convolutional Network с усложнённой логикой проверки и с применением продвинутых методов использования штатного инструментария библиотеки GNS. Пример также демонстрирует процедуру загрузки датасета, его применение на уровне модели, далее происходит тренировка после чего отображается точность полученной модели. Основная задача модели это поиск возможных связей между узлами описывающими граф пользователя: карьерная траектория.
+- Индустриальный пример [генерации серии графов](./gns/examples/example_industry_gsn_dataset_create.py). Данный пример демонстрирует способ генерации серии небольших графов совместимых с библиотекой GNS при помощи класса SfeduDataset, из неё выбираются графы описывающие пользователей и вакансии, после чего происходит преобразование данных в необходимый формат.
 
-To visualize the examples, the data is loaded into ArangoDB, for this [docker-compose file](./docker-compose.yml) with [partition mount](./arangodb_data).
+Для визуализации примеров данные загружаются в ArangoDB, для этого был использован [docker-compose файл](./docker-compose.yml) с [монтированием раздела](./arangodb_data).
 
-Visualization of the full graph of technologies.
+Визуализация полного графа технологий.
 
-![full technology graph in ArangoDB](./docs/images/map.png)
+![полный граф технологий в ArangoDB](./docs/images/map.png)
 
-Visualization of the competence graph of a PHP developer.
+Визуализация графа компетенций PHP-разработчика.
 
-![PHP developer competence graph](./docs/images/user1-php-backend.png)
+![граф компетенций PHP-разработчика](./docs/images/user1-php-backend.png)
 
-Visualization of the devops developer competence graph.
+Визуализация графа компетенций devops-разработчика.
 
-![devops developer competence graph](./docs/images/user2-dba-devops.png)
+![граф компетенций devops-разработчика](./docs/images/user2-dba-devops.png)
 
-Visualization of the competence graph of a JS developer.
+Визуализация графа компетенций JS-разработчика.
 
-![JS developer competence graph](./docs/images/user3-js-fullstack.png)
+![граф компетенций JS-разработчика](./docs/images/user3-js-fullstack.png)
+
+### Разработка поддерживается исследовательским центром «Сильный искусственный интеллект в промышленности» Университета ИТМО.
+
+![](https://gitlab.actcognitive.org/itmo-sai-code/organ/-/raw/main/docs/AIM-Strong_Sign_Norm-01_Colors.svg)
