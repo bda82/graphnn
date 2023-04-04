@@ -271,5 +271,6 @@ Visualization of the competence graph of a JS developer.
 ![JS developer competence graph](./docs/images/user3-js-fullstack.png)
 
 
-### The study is supported by the Research Center Strong Artificial Intelligence in Industry of ITMO University.
-![](https://gitlab.actcognitive.org/itmo-sai-code/organ/-/raw/main/docs/AIM-Strong_Sign_Norm-01_Colors.svg)
+## Suported by
+The study is supported by the [Research Center Strong Artificial Intelligence in Industry](https://sai.itmo.ru/) 
+of [ITMO University](https://en.itmo.ru/) as part of the plan of the center's program: Development and testing of an experimental prototype of a library of strong AI algorithms in terms of autonomous learning of explainable graph neural networks.
